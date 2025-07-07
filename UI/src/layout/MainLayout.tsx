@@ -1,11 +1,11 @@
-import type { ReactNode } from 'react';
+import type { ReactElement } from 'react';
 import Header from '../components/Header/Header';
 
 interface MainLayoutProps {
-  children: ReactNode;
+  children: ReactElement;
 }
 
-const MainLayout = ({ children }: MainLayoutProps): ReactNode => {
+const MainLayout = ({ children }: MainLayoutProps): ReactElement => {
   return (
     <div className='border w-full'>
       <Header />

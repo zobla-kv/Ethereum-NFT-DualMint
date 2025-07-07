@@ -1,11 +1,14 @@
 import './App.css';
+import { AuthProvider } from './context/AuthContext';
 import MainLayout from './layout/MainLayout';
 
 function App() {
   return (
-    <MainLayout>
-      <div>test</div>
-    </MainLayout>
+    <AuthProvider>
+      <MainLayout>
+        <div>test</div>
+      </MainLayout>
+    </AuthProvider>
   );
 }
 
