@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { FC, ReactElement } from 'react';
-import Button from '../../Button.tsx/Button';
+import Button from '../../ui/Button/Button';
 
 const ThemeToggle: FC = (): ReactElement => {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');

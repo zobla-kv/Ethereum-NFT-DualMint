@@ -1,18 +1,24 @@
 import type { FC } from 'react';
 
 import ThemeToggle from './ThemeToggle/ThemeToggle';
-import Button from '../Button.tsx/Button';
+import Button from '../ui/Button/Button';
 
 import { useAuth } from '../../context/AuthContext';
 
 const Header: FC = () => {
-  const { user, login } = useAuth();
+  const { user, login, logout } = useAuth();
 
   return (
-    <div className='border flex justify-end py-2 px-4 gap-4'>
-      <span>User: {user ? user.id : 'no user'}</span>
-      <Button text='Login' onClick={login} />
-      <ThemeToggle />
+    <div className='border flex justify-between items-center py-2 px-4'>
+      <div>
+        <p>address: {user?.address}</p>
+        <p>balance: {user?.balance.value}</p>
+      </div>
+      <div className='flex gap-4 items-center'>
+        <Button text='MetaMask' onClick={login} />
+        <Button text='Logout' onClick={logout} />
+        <ThemeToggle />
+      </div>
     </div>
   );
 };

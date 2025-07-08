@@ -1,11 +1,16 @@
 import type { ReactElement } from 'react';
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
+
+import { useAccount, useBalance, useConnect, useDisconnect } from 'wagmi';
+
 import type { User } from '../interface/User';
 
 interface AuthContextType {
+  isConnected: boolean;
+  isPending: boolean;
   user: User | null;
-  login: () => Promise<User>;
-  logout: () => Promise<void>;
+  login: () => void;
+  logout: () => void;
 }
 
 interface AuthProviderType {
@@ -17,25 +22,23 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthProvider = ({ children }: AuthProviderType): ReactElement => {
   const [user, setUser] = useState<User | null>(null);
 
-  const login = (): Promise<User> => {
-    return new Promise((res, rej) => {
-      setTimeout(() => {
-        setUser({ id: 1 });
-        res({ id: 1 });
-      }, 2000);
-    });
-  };
+  const { isConnected, isPending, address, balance, login, logout } =
+    useWallet();
 
-  const logout = (): Promise<void> => {
-    return new Promise((res, rej) => {
-      setTimeout(() => {
-        setUser(null);
-        res();
-      }, 2000);
-    });
-  };
+  useEffect(() => {
+    if (!isConnected || !address || !balance) {
+      setUser(null);
+      return;
+    }
 
-  return <AuthContext value={{ user, login, logout }}>{children}</AuthContext>;
+    setUser({ address, balance });
+  }, [isConnected, address, balance]);
+
+  return (
+    <AuthContext value={{ isConnected, isPending, user, login, logout }}>
+      {children}
+    </AuthContext>
+  );
 };
 
 /* eslint-disable react-refresh/only-export-components */
@@ -48,4 +51,22 @@ export const useAuth = () => {
   }
 
   return context;
+};
+
+const useWallet = () => {
+  const { connect, connectors, isPending } = useConnect({});
+  const { disconnect } = useDisconnect();
+  const { address, isConnected } = useAccount();
+  const { data: balance } = useBalance({ address });
+
+  const MetaMaskConnector = connectors[0];
+
+  return {
+    address,
+    balance,
+    isConnected,
+    isPending,
+    login: () => connect({ connector: MetaMaskConnector }),
+    logout: disconnect,
+  };
 };
