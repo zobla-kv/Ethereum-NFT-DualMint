@@ -6,7 +6,7 @@ import Button from '../ui/Button/Button';
 import { useAuth } from '../../context/AuthContext';
 
 const Header: FC = () => {
-  const { user, login, logout } = useAuth();
+  const { user, connect, disconnect } = useAuth();
 
   return (
     <div className='border flex justify-between items-center py-2 px-4'>
@@ -15,8 +15,8 @@ const Header: FC = () => {
         <p>balance: {user?.balance?.value}</p>
       </div>
       <div className='flex gap-4 items-center'>
-        <Button text='MetaMask' onClick={login} />
-        <Button text='Logout' onClick={logout} />
+        <Button text='MetaMask' onClick={connect} />
+        <Button text='Logout' onClick={disconnect} />
         <ThemeToggle />
       </div>
     </div>

@@ -6,9 +6,10 @@ const AuthLink: FC<LinkProps> = ({ to, children }): ReactElement => {
   const { user } = useAuth();
 
   const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
-    if (!user) {
+    if (user?.status !== 'connected') {
       e.preventDefault();
-      alert('You must be logged in to access this page.');
+      // TODO: add toast
+      alert('You must connect a wallet first.');
       return;
     }
   };

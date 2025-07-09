@@ -1,7 +1,8 @@
-export interface User {
-  address: `0x${string}`;
+import type { GetAccountReturnType } from '@wagmi/core';
+
+export type User = GetAccountReturnType & {
   balance: WalletBalance | undefined;
-}
+};
 
 interface WalletBalance {
   decimals: number;

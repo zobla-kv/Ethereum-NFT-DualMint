@@ -1,15 +1,16 @@
 import type { ReactElement } from 'react';
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext } from 'react';
 
 import { useAccount, useBalance, useConnect, useDisconnect } from 'wagmi';
+import { getAccount } from 'wagmi/actions';
+import config from '../../wagmi.config';
 
 import type { User } from '../interface/User';
 
 interface AuthContextType {
   user: User | null;
-  status: 'connected' | 'disconnected' | 'connecting' | 'reconnecting';
-  login: () => void;
-  logout: () => void;
+  connect: () => void;
+  disconnect: () => void;
 }
 
 interface AuthProviderType {
@@ -19,24 +20,17 @@ interface AuthProviderType {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: AuthProviderType): ReactElement => {
-  const [user, setUser] = useState<User | null>(null);
-  const { address, balance, status, login, logout } = useWallet();
+  const account = getAccount(config);
+  const { balance, connect, disconnect } = useWallet();
 
-  useEffect(() => {
-    if (status === 'disconnected' || !address) {
-      setUser(null);
-      return;
-    }
+  let user: User | null = null;
 
-    if (status === 'connected') {
-      setUser({ address, balance });
-    }
-  }, [status, address, balance]);
+  if (account) {
+    user = { ...account, balance };
+  }
 
   return (
-    <AuthContext value={{ user, status, login, logout }}>
-      {children}
-    </AuthContext>
+    <AuthContext value={{ user, connect, disconnect }}>{children}</AuthContext>
   );
 };
 
@@ -55,16 +49,20 @@ export const useAuth = () => {
 const useWallet = () => {
   const { connect, connectors } = useConnect();
   const { disconnect } = useDisconnect();
-  const { address, status } = useAccount();
+  const { address } = useAccount();
   const { data: balance } = useBalance({ address });
 
-  const MetaMaskConnector = connectors[0];
+  const MetaMaskConnector = connectors.find(
+    (connector) => connector.name === 'MetaMask'
+  );
+
+  if (!MetaMaskConnector) {
+    throw new Error('MetaMask connector not found');
+  }
 
   return {
-    address,
     balance,
-    status,
-    login: () => connect({ connector: MetaMaskConnector }),
-    logout: disconnect,
+    connect: () => connect({ connector: MetaMaskConnector }),
+    disconnect: disconnect,
   };
 };
