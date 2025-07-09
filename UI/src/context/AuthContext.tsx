@@ -6,9 +6,8 @@ import { useAccount, useBalance, useConnect, useDisconnect } from 'wagmi';
 import type { User } from '../interface/User';
 
 interface AuthContextType {
-  isConnected: boolean;
-  isPending: boolean;
   user: User | null;
+  status: 'connected' | 'disconnected' | 'connecting' | 'reconnecting';
   login: () => void;
   logout: () => void;
 }
@@ -21,21 +20,21 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: AuthProviderType): ReactElement => {
   const [user, setUser] = useState<User | null>(null);
-
-  const { isConnected, isPending, address, balance, login, logout } =
-    useWallet();
+  const { address, balance, status, login, logout } = useWallet();
 
   useEffect(() => {
-    if (!isConnected || !address || !balance) {
+    if (status === 'disconnected' || !address) {
       setUser(null);
       return;
     }
 
-    setUser({ address, balance });
-  }, [isConnected, address, balance]);
+    if (status === 'connected') {
+      setUser({ address, balance });
+    }
+  }, [status, address, balance]);
 
   return (
-    <AuthContext value={{ isConnected, isPending, user, login, logout }}>
+    <AuthContext value={{ user, status, login, logout }}>
       {children}
     </AuthContext>
   );
@@ -54,9 +53,9 @@ export const useAuth = () => {
 };
 
 const useWallet = () => {
-  const { connect, connectors, isPending } = useConnect({});
+  const { connect, connectors } = useConnect();
   const { disconnect } = useDisconnect();
-  const { address, isConnected } = useAccount();
+  const { address, status } = useAccount();
   const { data: balance } = useBalance({ address });
 
   const MetaMaskConnector = connectors[0];
@@ -64,8 +63,7 @@ const useWallet = () => {
   return {
     address,
     balance,
-    isConnected,
-    isPending,
+    status,
     login: () => connect({ connector: MetaMaskConnector }),
     logout: disconnect,
   };

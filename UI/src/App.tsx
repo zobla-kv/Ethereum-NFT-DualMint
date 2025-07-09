@@ -7,7 +7,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { AuthProvider } from './context/AuthContext';
 
-import MainLayout from './layout/MainLayout';
+import { RouterProvider } from 'react-router-dom';
+import { router } from './routes';
 
 const queryClient = new QueryClient();
 
@@ -16,9 +17,7 @@ function App() {
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <MainLayout>
-            <div>test</div>
-          </MainLayout>
+          <RouterProvider router={router} />
         </AuthProvider>
       </QueryClientProvider>
     </WagmiProvider>

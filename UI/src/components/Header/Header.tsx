@@ -12,7 +12,7 @@ const Header: FC = () => {
     <div className='border flex justify-between items-center py-2 px-4'>
       <div>
         <p>address: {user?.address}</p>
-        <p>balance: {user?.balance.value}</p>
+        <p>balance: {user?.balance?.value}</p>
       </div>
       <div className='flex gap-4 items-center'>
         <Button text='MetaMask' onClick={login} />
