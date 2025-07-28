@@ -1,15 +1,16 @@
 import { useState } from 'react';
 import type { FC, ReactElement } from 'react';
-import Button from '../../ui/Button/Button';
 
 const ThemeToggle: FC = (): ReactElement => {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
   return (
-    <Button
-      text='Theme'
+    <button
+      className='btn-primary'
       onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-    ></Button>
+    >
+      Theme
+    </button>
   );
 };
 
