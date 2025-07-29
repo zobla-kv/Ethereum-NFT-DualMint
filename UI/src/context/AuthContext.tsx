@@ -1,9 +1,7 @@
-import type { ReactElement } from 'react';
+import type { PropsWithChildren, ReactElement } from 'react';
 import { createContext, useContext } from 'react';
 
 import { useAccount, useBalance, useConnect, useDisconnect } from 'wagmi';
-import { getAccount } from 'wagmi/actions';
-import config from '../../wagmi.config';
 
 import type { User } from '../interface/User';
 
@@ -13,20 +11,19 @@ interface AuthContextType {
   disconnect: () => void;
 }
 
-interface AuthProviderType {
-  children: ReactElement;
-}
-
 const AuthContext = createContext<AuthContextType | null>(null);
 
-export const AuthProvider = ({ children }: AuthProviderType): ReactElement => {
-  const account = getAccount(config);
+export const AuthProvider = ({ children }: PropsWithChildren): ReactElement => {
+  const account = useAccount();
   const { balance, connect, disconnect } = useWallet();
 
   let user: User | null = null;
 
-  if (account) {
-    user = { ...account, balance };
+  if (account.address) {
+    user = {
+      ...account,
+      balance,
+    };
   }
 
   return (

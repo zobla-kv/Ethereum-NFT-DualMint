@@ -11,14 +11,12 @@ export const router = createBrowserRouter([
     element: <HomePage />,
   },
   {
-    path: '/chain',
-    element: <ProtectedRoute />,
-    children: [
-      {
-        path: ':network',
-        element: <ChainPage />,
-      },
-    ],
+    path: '/chain/:network',
+    element: (
+      <ProtectedRoute>
+        <ChainPage />
+      </ProtectedRoute>
+    ),
   },
   {
     path: '*',

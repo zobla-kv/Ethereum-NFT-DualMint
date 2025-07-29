@@ -1,13 +1,13 @@
 import { http, createConfig } from 'wagmi';
-import { sepolia, goerli } from 'wagmi/chains';
+import { sepolia, arbitrum } from 'wagmi/chains';
 import { metaMask } from 'wagmi/connectors';
 
 const config = createConfig({
-  chains: [sepolia, goerli],
+  chains: [sepolia, arbitrum],
   connectors: [metaMask()],
   transports: {
     [sepolia.id]: http(),
-    [goerli.id]: http(),
+    [arbitrum.id]: http(),
   },
 });
 
