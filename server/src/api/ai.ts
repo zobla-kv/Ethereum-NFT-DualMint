@@ -1,5 +1,8 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import rateLimit from 'express-rate-limit';
+
+import { generateImage } from '../services/ai';
+import ApiError from '../lib/ApiError';
 
 const aiRouter = Router();
 
@@ -15,8 +18,17 @@ const limiter = rateLimit({
   },
 });
 
-aiRouter.post('/', limiter, (req: Request, res: Response) => {
-  res.status(200).json({ response: 'image' });
-});
+aiRouter.post('/', limiter, async (req: Request, res: Response, next: NextFunction) => {
+    const { prompt } = req.body;
+
+    try {
+      const image_url = await generateImage(prompt);
+      res.status(200).json({ image_url });
+      
+    } catch (err: unknown) {
+      next(new ApiError(`[images][POST]: ${err}`));
+    }
+  }
+);
 
 export default aiRouter;
