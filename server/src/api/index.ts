@@ -3,6 +3,6 @@ import aiRouter from './ai';
 
 const router = Router();
 
-router.use('/images', aiRouter);
+router.use('/nft', aiRouter);
 
 export default router;

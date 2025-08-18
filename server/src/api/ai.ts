@@ -2,7 +2,7 @@ import { Router, Request, Response, NextFunction } from 'express';
 import rateLimit from 'express-rate-limit';
 
 import { validatePrompt } from '../middleware/validators';
-import { generateImage } from '../services/ai';
+import { generateNFTDraft } from '../services/ai';
 import ApiError from '../lib/ApiError';
 
 const aiRouter = Router();
@@ -18,13 +18,13 @@ const limiter = rateLimit({
   },
 });
 
-aiRouter.post('/', limiter, validatePrompt('[images][POST]'), async (req: Request, res: Response, next: NextFunction) => {
+aiRouter.post('/', limiter, validatePrompt('[nft][POST]'), async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const imageUrl= await generateImage(req.body.prompt);
-      res.status(200).json({ imageUrl});
+      const nftDraft = await generateNFTDraft(req.body.prompt);
+      res.status(200).json({ nftDraft });
       
     } catch (err: unknown) {
-      next(new ApiError(`[images][POST]: ${err}`, ApiError.errors.default));
+      next(new ApiError(`[nft][POST]: ${err}`, ApiError.errors.default));
     }
   }
 );
