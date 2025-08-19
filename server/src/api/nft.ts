@@ -5,7 +5,7 @@ import { validatePrompt } from '../middleware/validators';
 import { generateNFTDraft } from '../services/ai';
 import ApiError from '../lib/ApiError';
 
-const aiRouter = Router();
+const NFTRouter = Router();
 
 const limiter = rateLimit({
   windowMs: 24 * 60 * 60 * 1000,
@@ -18,9 +18,7 @@ const limiter = rateLimit({
   },
 });
 
-// TODO: testiranje ovoga sve moguce varijante
-// testiraj apierror i loger
-aiRouter.post('/', limiter, validatePrompt('[nft][POST]'), async (req: Request, res: Response, next: NextFunction) => {
+NFTRouter.post('/', limiter, validatePrompt('[nft][POST]'), async (req: Request, res: Response, next: NextFunction) => {
     try {
       const nftDraft = await generateNFTDraft(req.body.prompt);
       res.status(200).json({ nftDraft });
@@ -31,4 +29,4 @@ aiRouter.post('/', limiter, validatePrompt('[nft][POST]'), async (req: Request, 
   }
 );
 
-export default aiRouter;
+export default NFTRouter;

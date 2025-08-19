@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import aiRouter from './ai';
+import NFTRouter from './nft';
 
 const router = Router();
 
-router.use('/nft', aiRouter);
+router.use('/nft', NFTRouter);
 
 export default router;
