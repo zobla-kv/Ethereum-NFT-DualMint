@@ -18,6 +18,8 @@ const limiter = rateLimit({
   },
 });
 
+// TODO: testiranje ovoga sve moguce varijante
+// testiraj apierror i loger
 aiRouter.post('/', limiter, validatePrompt('[nft][POST]'), async (req: Request, res: Response, next: NextFunction) => {
     try {
       const nftDraft = await generateNFTDraft(req.body.prompt);
