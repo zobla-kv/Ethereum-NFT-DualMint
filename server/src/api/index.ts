@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import NFTRouter from './nft';
+import NFTRouter from './nft/nft';
 
 const router = Router();
 

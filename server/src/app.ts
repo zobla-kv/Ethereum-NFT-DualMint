@@ -8,7 +8,7 @@ const SERVER_PORT = 4600;
 import apiRouter from './api/index';
 
 // middlewares
-import errorHandler from './middleware/errorHandler';
+import errorHandler from './middleware/errorHandler/errorHandler';
 import cors from './middleware/cors';
 
 // api handlers

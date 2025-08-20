@@ -1,15 +1,15 @@
 import OpenAI from 'openai';
 
-import { NFT, NFTMetadata } from '../lib/NFT';
+import { NFT, NFTMetadata } from '../../lib/NFT';
 
-const openAI = new OpenAI({
+export const openAI = new OpenAI({
   apiKey: process.env.OPEN_AI_API_KEY,
 });
 
 /**
  * Generate NFT draft image and metadata from prompt
  * @param prompt - prompt text
- * @returns image URL 
+ * @returns image URL
  */
 export async function generateNFTDraft(prompt: string): Promise<NFT> {
   const [imageUrl, metadata] = await Promise.all([
@@ -17,7 +17,7 @@ export async function generateNFTDraft(prompt: string): Promise<NFT> {
     generateMetadataForPrompt(prompt),
   ]);
 
-  return { metadata: { ...metadata, image: imageUrl }};
+  return { metadata: { ...metadata, image: imageUrl } };
 }
 
 /**
@@ -81,7 +81,7 @@ export async function generateMetadataForPrompt(prompt: string): Promise<NFTMeta
   if (!metadata) {
     throw new Error('Failed to generate metadata for image.');
   }
-  
+
   try {
     return JSON.parse(metadata) as NFTMetadata;
   } catch (err) {
