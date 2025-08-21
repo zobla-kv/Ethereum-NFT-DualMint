@@ -60,6 +60,6 @@ const useWallet = () => {
   return {
     balance,
     connect: () => connect({ connector: MetaMaskConnector }),
-    disconnect: disconnect,
+    disconnect: () => disconnect(),
   };
 };

@@ -2,8 +2,8 @@ import { createBrowserRouter } from 'react-router-dom';
 
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import NotFound from './pages/NotFound';
-import HomePage from './pages/HomePage';
-import ChainPage from './pages/ChainPage';
+import HomePage from './pages/HomePage/HomePage';
+import ChainPage from './pages/ChainPage/ChainPage';
 
 export const router = createBrowserRouter([
   {

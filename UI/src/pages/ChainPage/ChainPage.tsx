@@ -7,11 +7,11 @@ import {
 
 import { produce } from 'immer';
 
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 
-import MainLayout from '../layout/MainLayout';
+import MainLayout from '../../layout/MainLayout';
 
-import AsyncButton from '../components/ui/AsyncButton/AsyncButton';
+import AsyncButton from '../../components/ui/AsyncButton/AsyncButton';
 
 type FormStatus = 'idle' | 'submitting' | 'invalid';
 
@@ -50,15 +50,16 @@ const ChainPage = (): ReactElement => {
   };
 
   // TODO: add validation either here or on input change
-  // TODO: send data to server, handle responses, add return type
+  // TODO: handle responses, add return type
   const handleGenerateImage = async (ev: FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
     setFormStatus('submitting');
 
+    // TODO: take prompt from form
     await fetch('http://localhost:4600/api/nft', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: 'cat 123 on the moon' }),
+      body: JSON.stringify({ prompt: 'cat on the moon' }),
     })
       .then(async (res) => {
         // TODO: add res and err types
@@ -115,8 +116,6 @@ const ChainPage = (): ReactElement => {
           <form onSubmit={(e) => handleMintNFT(e)}>
             <h2>Preview NFT</h2>
             <fieldset>
-              <legend className='sr-only'>Preview NFT</legend>
-
               <label htmlFor='address'>Address</label>
               <input
                 id='address'

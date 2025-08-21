@@ -1,8 +1,8 @@
 import type { ReactElement } from 'react';
 
-import MainLayout from '../layout/MainLayout';
+import MainLayout from '../../layout/MainLayout';
 
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 import { useSwitchChain } from 'wagmi';
 import { useNavigate } from 'react-router';
 import type { Chain } from 'viem';
