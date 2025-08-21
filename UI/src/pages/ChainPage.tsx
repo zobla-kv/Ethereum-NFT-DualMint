@@ -51,12 +51,31 @@ const ChainPage = (): ReactElement => {
 
   // TODO: add validation either here or on input change
   // TODO: send data to server, handle responses, add return type
-  const handleGenerateImage = (ev: FormEvent<HTMLFormElement>) => {
+  const handleGenerateImage = async (ev: FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
     setFormStatus('submitting');
+
+    await fetch('http://localhost:4600/api/nft', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: 'cat 123 on the moon' }),
+    })
+      .then(async (res) => {
+        // TODO: add res and err types
+        if (!res.ok) {
+          const errorBody = await res.json();
+          throw new Error(errorBody?.error || 'Something went wrong');
+        }
+
+        const responseJson = await res.json();
+        setFormStatus('idle');
+      })
+      .catch((err) => {
+        setFormStatus('invalid');
+      });
   };
 
-  // TODO: send data to server, handle responses, add return type
+  // TODO: send data to blockchain, handle responses, add return type
   const handleMintNFT = (ev: FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
   };
