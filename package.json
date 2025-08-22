@@ -1,0 +1,34 @@
+{
+  "name": "ethereum-nft-dualmint",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "main": "index.js",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "clean": "rimraf node_modules apps/*/node_modules packages/*/node_modules apps/*/dist packages/*/dist",
+    "test": "npm run test -ws",
+    "dev": "npm run dev -ws",
+    "build": "npm run build -ws",
+    "UI:test": "npm run test --workspace=apps/UI",
+    "UI:dev": "npm run dev --workspace=apps/UI",
+    "UI:build": "npm run build --workspace=apps/UI",
+    "server:test": "npm run test --workspace=apps/server",
+    "server:dev": "npm run dev --workspace=apps/server",
+    "server:build": "npm run build --workspace=apps/server",
+    "server:prod": "npm run prod --workspace=apps/server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zobla-kv/Ethereum-NFT-Dualmint.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zobla-kv/Ethereum-NFT-Dualmint/issues"
+  },
+  "homepage": "https://github.com/zobla-kv/Ethereum-NFT-Dualmint#readme"
+}
