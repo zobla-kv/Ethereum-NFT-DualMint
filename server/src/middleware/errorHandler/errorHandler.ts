@@ -10,7 +10,7 @@ export default function errorHandler(err: Error, _: Request, res: Response, __: 
     console.error(err.stack);
 
     const { error, status } = err.response;
-    res.status(status).json({ error });
+    res.status(status).json({ error, status }); //TODO: [ApiError] send message back also
     return;
   }
 
