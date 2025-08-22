@@ -3,7 +3,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ChainPage from './ChainPage';
 
 import { useAuth } from '../../context/AuthContext';
-import AsyncButton from '../../components/ui/AsyncButton/AsyncButton';
 
 vi.mock('../../context/AuthContext', () => ({
   useAuth: vi.fn(),
@@ -48,14 +47,18 @@ describe('ChainPage', () => {
     expect(textarea.value).toBe('My NFT prompt');
   });
 
-  it('submits generate image form successfully', async () => {
+  it('submits generate NFTDraft form successfully', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
       json: async () => ({ nftDraft: {} }),
     });
 
     render(<ChainPage />);
+
+    const textarea = screen.getByPlaceholderText('Describe your image');
     const generateButton = screen.getByText('Generate');
+
+    fireEvent.change(textarea, { target: { value: 'cat on the moon' } });
     fireEvent.click(generateButton);
 
     await waitFor(() => {
@@ -72,18 +75,19 @@ describe('ChainPage', () => {
     });
   });
 
-  it('handles fetch failure and sets invalid state', async () => {
-    mockFetch.mockResolvedValueOnce({
-      ok: false,
-      json: async () => ({ error: 'Failed' }),
-    });
+
+  it('resets state to idle when fetch throws an error', async () => {
+    mockFetch.mockRejectedValueOnce(new Error('Network error'));
 
     render(<ChainPage />);
+    const textarea = screen.getByPlaceholderText('Describe your image');
     const generateButton = screen.getByText('Generate');
+
+    fireEvent.change(textarea, { target: { value: 'Valid prompt' } });
     fireEvent.click(generateButton);
 
     await waitFor(() => {
-      expect(mockFetch).toHaveBeenCalled();
+      expect(generateButton).not.toBeDisabled();
     });
   });
 
