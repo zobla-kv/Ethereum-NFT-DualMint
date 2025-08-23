@@ -28,9 +28,6 @@ interface FormData {
   };
 }
 
-const promptValidationError =
-  'Prompt can only contain letters, numbers, commas, and periods';
-
 // TODO: 404 if non existing chain
 const ChainPage = (): ReactElement => {
   const { user } = useAuth();
@@ -60,6 +57,7 @@ const ChainPage = (): ReactElement => {
     );
   };
 
+  // prettier-ignore
   const handleGenerateNFTDraft = async (ev: FormEvent<HTMLFormElement>): Promise<void> => {
     ev.preventDefault();
 
@@ -68,7 +66,8 @@ const ChainPage = (): ReactElement => {
     if (!isPromptValid(prompt)) {
       setFormData(
         produce(formData, (draft) => {
-          draft.prompt.error = promptValidationError;
+          draft.prompt.error =
+            'Prompt can only contain letters, numbers, commas, and periods';
         })
       );
       return;
@@ -86,25 +85,24 @@ const ChainPage = (): ReactElement => {
 
         if (!res.ok) {
           const error = data as ApiErrorResponse;
+
+          const updateForm = (status: FormStatus) => {
+            setFormData(
+              produce(formData, (draft) => {
+                draft.prompt.error = error.message;
+              })
+            );
+            setFormStatus(status);
+          };
+
           switch (error.status) {
             case 400:
-              setFormData(
-                produce(formData, (draft) => {
-                  draft.prompt.error = promptValidationError;
-                })
-              );
-              setFormStatus('idle');
+              updateForm('idle');
               return;
 
             case 429:
               // TODO: show message and count immediately?
-              // TODO: [ApiError] show message from server
-              setFormData(
-                produce(formData, (draft) => {
-                  draft.prompt.error = 'Limited to 5 NFTs a day';
-                })
-              );
-              setFormStatus('blocked');
+              updateForm('blocked');
               return;
 
             default:

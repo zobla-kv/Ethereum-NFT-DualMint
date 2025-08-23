@@ -1,16 +1,19 @@
 import { NextFunction, Request, Response } from 'express';
 import ApiError from '../../lib/ApiError';
+import { ApiErrorResponse } from '@nft/types/ApiResponse';
 
 const defaultError = 'Something went wrong. Please try again.';
 const defaultStatus = 500;
 
+// prettier-ignore
 export default function errorHandler(err: Error, _: Request, res: Response, __: NextFunction) {
   if (err instanceof ApiError) {
     // logger
     console.error(err.stack);
 
-    const { error, status } = err.response;
-    res.status(status).json({ error, status }); //TODO: [ApiError] send message back also
+    const { status, message } = err.response;
+    const response: ApiErrorResponse = { status, message };
+    res.status(status).json(response);
     return;
   }
 

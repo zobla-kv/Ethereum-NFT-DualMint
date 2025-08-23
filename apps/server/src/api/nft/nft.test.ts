@@ -5,6 +5,10 @@ import NFTRouter from './nft';
 import errorHandler from '../../middleware/errorHandler/errorHandler';
 import { generateNFTDraft } from '../../services/ai/ai';
 
+jest.mock('express-rate-limit', () => {
+  return jest.fn(() => (req: any, res: any, next: any) => next());
+});
+
 const app = express();
 app.use(express.json());
 app.use('/api/nft', NFTRouter);
@@ -19,7 +23,9 @@ describe('API /nft', () => {
     it('should use validatePrompt middleware and return 400 for invalid prompt', async () => {
       const res = await request(app).post('/api/nft').send({ prompt: '!!!' });
       expect(res.statusCode).toBe(400);
-      expect(res.body.error).toContain('Invalid input');
+      expect(res.body.message).toContain(
+        'Prompt can only contain letters, numbers, commas, and periods'
+      );
     });
 
     it('should return 500 if generateNFTDraft throws an error', async () => {
@@ -27,8 +33,9 @@ describe('API /nft', () => {
       const res = await request(app)
         .post('/api/nft')
         .send({ prompt: 'ValidPrompt' });
+
       expect(res.statusCode).toBe(500);
-      expect(res.body.error).toContain('Something went wrong');
+      expect(res.body.message).toContain('Something went wrong');
     });
 
     it('should return valid model on success', async () => {

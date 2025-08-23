@@ -18,7 +18,7 @@ describe('errorHandler', () => {
 
   it('should log error stack and return appropriate response for ApiError', () => {
     const apiError = new ApiError('[API][METHOD]: [Internal Error]', {
-      error: 'Response Error Message',
+      message: 'Response Error Message',
       status: 400,
     });
 
@@ -31,7 +31,7 @@ describe('errorHandler', () => {
 
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith({
-      error: 'Response Error Message',
+      message: 'Response Error Message',
       status: 400,
     });
 

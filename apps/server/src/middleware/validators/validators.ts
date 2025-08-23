@@ -8,7 +8,13 @@ export function validatePrompt(context: `[${string}][${string}]`) {
     const regex = /^[a-zA-Z0-9 ]{1,200}$/;
 
     if (!regex.test(prompt)) {
-      next(new ApiError(`${context}: Invalid parameter 'prompt': ${prompt}`,ApiError.errors.invalidInput));
+      next(
+        new ApiError(`${context}: Invalid parameter 'prompt': ${prompt}`, {
+          status: 400,
+          message:
+            'Prompt can only contain letters, numbers, commas, and periods',
+        })
+      );
       return;
     }
 
