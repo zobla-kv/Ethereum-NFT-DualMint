@@ -68,7 +68,11 @@ export async function generateMetadataForPrompt(
             }[];
           }
 
-        - If display_type type is 'date', then value type must be number`,
+        ** IMPORTANT **
+        - Do not include a period (".") at the end of any property value
+        - Include 5 to 10 attributes
+        - Make sure not to include any date in the response
+        `,
       },
       {
         role: 'user',
