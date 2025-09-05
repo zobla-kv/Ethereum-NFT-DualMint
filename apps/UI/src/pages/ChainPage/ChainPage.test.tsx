@@ -34,7 +34,7 @@ describe('ChainPage', () => {
 
   it('renders both forms', () => {
     render(<ChainPage />);
-    expect(screen.getByText('Generate image for your NFT')).toBeInTheDocument();
+    expect(screen.getByText('Generate NFT draft')).toBeInTheDocument();
     expect(screen.getByText('Preview NFT')).toBeInTheDocument();
   });
 
@@ -50,7 +50,14 @@ describe('ChainPage', () => {
   it('submits generate NFTDraft form successfully', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ nftDraft: {} }),
+      json: async () => ({
+        metadata: {
+          image: 'http://example.com/fake.png',
+          description: 'fake description',
+          name: 'Fake NFT',
+          attributes: [{ trait_type: 'Color', value: 'Red' }],
+        },
+      }),
     });
 
     render(<ChainPage />);
@@ -74,7 +81,6 @@ describe('ChainPage', () => {
       );
     });
   });
-
 
   it('resets state to idle when fetch throws an error', async () => {
     mockFetch.mockRejectedValueOnce(new Error('Network error'));
