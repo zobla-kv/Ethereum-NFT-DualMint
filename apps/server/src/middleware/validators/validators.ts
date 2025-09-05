@@ -5,7 +5,7 @@ export function validatePrompt(context: `[${string}][${string}]`) {
   return (req: Request, _: Response, next: NextFunction): void => {
     const { prompt } = req.body;
 
-    const regex = /^[a-zA-Z0-9 ]{1,200}$/;
+    const regex = /^[a-zA-Z0-9 ,.\n]{1,200}$/;
 
     if (!regex.test(prompt)) {
       next(
