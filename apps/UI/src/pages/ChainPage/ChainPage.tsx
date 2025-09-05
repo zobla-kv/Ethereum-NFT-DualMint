@@ -1,3 +1,5 @@
+import photoLibraryIcon from '../../assets/photo_icon.svg';
+
 import {
   useState,
   type ChangeEvent,
@@ -29,16 +31,17 @@ interface FormData {
 }
 
 // TODO: 404 if non existing chain
+// TODO: fix bug. Alert shows when Enter nft prompt -> submit the form -> reload the page
 const ChainPage = (): ReactElement => {
   const { user } = useAuth();
 
+  const [nftDraft, setNftDraft] = useState<NFT | null>(null);
   const [formData, setFormData] = useState<FormData>({
     prompt: {
       value: '',
       error: null,
     },
   });
-
   const [formStatus, setFormStatus] = useState<FormStatus>('idle');
 
   const handleInputChange = (ev: ChangeEvent<HTMLTextAreaElement>): void => {
@@ -110,8 +113,11 @@ const ChainPage = (): ReactElement => {
           }
         }
 
+        const nftDraft = data as NFT;
+
         setFormStatus('idle');
-        return data as NFT;
+        setNftDraft(nftDraft);
+        return nftDraft;
       })
       .catch((err) => {
         // TODO: add toast
@@ -121,7 +127,7 @@ const ChainPage = (): ReactElement => {
   };
 
   const isPromptValid = (prompt: string): boolean => {
-    const regex = /^[a-zA-Z0-9 ,.]{1,200}$/;
+    const regex = /^[a-zA-Z0-9 ,.\n]{1,200}$/;
     return regex.test(prompt) ? true : false;
   };
 
@@ -133,52 +139,141 @@ const ChainPage = (): ReactElement => {
   return (
     <MainLayout>
       <div>
-        <h1 className='text-center mt-5'>
+        <h1 className="text-center mt-5">
           Generate NFT on {user?.chain?.name}
         </h1>
-        <div className='flex'>
-          <form onSubmit={(e) => handleGenerateNFTDraft(e)}>
-            <h2>Generate image for your NFT</h2>
-            <label htmlFor='prompt' className='sr-only'>
+        <div className="flex">
+          <form
+            onSubmit={(e) => handleGenerateNFTDraft(e)}
+            className="w-[400px]"
+          >
+            <h2>Generate NFT draft</h2>
+            <label htmlFor="prompt" className="sr-only">
               Prompt
             </label>
-            <div className='w-full'>
+            <div className="w-full">
               <textarea
-                id='prompt'
-                name='prompt'
+                id="prompt"
+                name="prompt"
                 rows={4}
-                placeholder='Describe your image'
+                placeholder="Describe your image"
                 value={formData.prompt.value}
                 onChange={(e) => handleInputChange(e)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    const form = e.currentTarget.form;
+                    if (form) {
+                      form.dispatchEvent(
+                        new Event('submit', { cancelable: true, bubbles: true })
+                      );
+                    }
+                  }
+                }}
               />
               {formData.prompt.error && (
-                <span className='error'>{formData.prompt.error}</span>
+                <span className="error">{formData.prompt.error}</span>
               )}
               {/* always render to prevent layout shift */}
               {/* <span className='error'>{formData.prompt.error}</span> */}
             </div>
             <AsyncButton
-              text='Generate'
-              type='submit'
+              text="Generate"
+              type="submit"
               disabled={formStatus === 'invalid' || formStatus === 'blocked'}
               isLoading={formStatus === 'submitting'}
             />
           </form>
 
-          <form onSubmit={(e) => handleMintNFT(e)}>
+          <form
+            onSubmit={(e) => handleMintNFT(e)}
+            className="w-[820px] min-h-[400px]"
+          >
             <h2>Preview NFT</h2>
             <fieldset>
-              <label htmlFor='address'>Address</label>
+              <label htmlFor="address">Address</label>
               <input
-                id='address'
-                name='address'
+                id="address"
+                name="address"
                 value={user?.address}
                 disabled
               />
 
-              {/* TODO: image and metadata fields */}
+              <div className="flex mt-4 gap-5">
+                <div className="text-center min-w-[300px]">
+                  {nftDraft ? (
+                    <img
+                      className="border-3 border-blue-600 p-2 min-w-[300px] h-[300px] rounded mb-5"
+                      src={nftDraft.metadata.image}
+                      alt={nftDraft.metadata.description}
+                    />
+                  ) : (
+                    <div className="relative border-3 border-gray-300 bg-gray-200 min-w-[300px] h-[300px] rounded mb-5 grid place-items-center">
+                      <img
+                        src={photoLibraryIcon}
+                        className="w-[180px] h-[180px]"
+                      />
+                      <span className="absolute bottom-5 animate-pulse">
+                        Waiting for image...
+                      </span>
+                    </div>
+                  )}
+
+                  <AsyncButton
+                    text="Mint NFT"
+                    type="submit"
+                    disabled={!nftDraft}
+                    isLoading={false}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 w-full">
+                  <div className="col-span-2">
+                    <label htmlFor="name">[ Name ]</label>
+                    <input
+                      id="name"
+                      name="name"
+                      value={nftDraft?.metadata.name || ''}
+                      placeholder="Waiting for image..."
+                      disabled={!nftDraft}
+                      className={!nftDraft ? 'animate-pulse' : ''}
+                    />
+                  </div>
+
+                  <div className="col-span-2">
+                    <label htmlFor="description">[ Description ]</label>
+                    <textarea
+                      id="description"
+                      name="description"
+                      value={nftDraft?.metadata.description || ''}
+                      placeholder="Waiting for image..."
+                      disabled={!nftDraft}
+                      className={!nftDraft ? 'animate-pulse' : ''}
+                    />
+                  </div>
+
+                  {(nftDraft?.metadata.attributes || Array(5).fill({})).map(
+                    (attr, index) => {
+                      return (
+                        <div
+                          key={attr?.trait_type || index}
+                          className="attribute-card"
+                        >
+                          <label>[ {attr?.trait_type || 'Attribute'} ]</label>
+                          <p
+                            className={`font-sm font-bold ${
+                              !nftDraft ? 'animate-pulse' : ''
+                            }`}
+                          >
+                            {attr.value || 'Waiting for image...'}
+                          </p>
+                        </div>
+                      );
+                    }
+                  )}
+                </div>
+              </div>
             </fieldset>
-            <AsyncButton text='Mint NFT' type='submit' isLoading={false} />
           </form>
         </div>
       </div>

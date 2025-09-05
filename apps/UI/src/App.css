@@ -3,3 +3,7 @@
 .btn-primary {
   @apply bg-blue-600 hover:bg-blue-400 text-white py-2 px-4 rounded;
 }
+
+.attribute-card {
+  @apply rounded-lg border p-3 text-center flex flex-col gap-1 bg-gray-100 min-w-[220px];
+}
