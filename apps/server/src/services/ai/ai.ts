@@ -89,7 +89,12 @@ export async function generateMetadataForPrompt(
   }
 
   try {
-    return JSON.parse(metadata) as NFTMetadata;
+    const parsed = JSON.parse(metadata) as NFTMetadata;
+
+    const sanitize = (s: string) => s.replace(/\.$/, '');
+    parsed.description = sanitize(parsed.description);
+
+    return parsed;
   } catch (err) {
     throw new Error('Failed to parse metadata JSON from OpenAI');
   }
