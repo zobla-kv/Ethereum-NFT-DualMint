@@ -31,31 +31,34 @@ interface FormData {
 }
 
 // TODO: 404 if non existing chain
-// TODO: fix bug. Alert shows when Enter nft prompt -> submit the form -> reload the page
+// TODO: fix bug. Alert shows when: Enter nft prompt -> submit the form -> reload the page
+// TODO: allow user to update name and description
 const ChainPage = (): ReactElement => {
   const { user } = useAuth();
 
   const [nftDraft, setNftDraft] = useState<NFT | null>(null);
-  const [formData, setFormData] = useState<FormData>({
+  const [promptFormData, setPromptFormData] = useState<FormData>({
     prompt: {
       value: '',
       error: null,
     },
   });
-  const [formStatus, setFormStatus] = useState<FormStatus>('idle');
+  const [promptFormStatus, setPromptFormStatus] = useState<FormStatus>('idle');
+  const [nftDraftFormStatus, setNftDraftFormStatus] =
+    useState<FormStatus>('idle');
 
   const handleInputChange = (ev: ChangeEvent<HTMLTextAreaElement>): void => {
     const value = ev.target.value;
 
-    if (formStatus !== 'submitting' && formStatus !== 'blocked') {
-      setFormStatus('idle');
+    if (promptFormStatus !== 'submitting' && promptFormStatus !== 'blocked') {
+      setPromptFormStatus('idle');
     }
 
-    setFormData((prevData) =>
+    setPromptFormData((prevData) =>
       produce(prevData, (draft) => {
         draft.prompt.value = value;
         draft.prompt.error =
-          formStatus === 'blocked' ? prevData.prompt.error : null;
+          promptFormStatus === 'blocked' ? prevData.prompt.error : null;
       })
     );
   };
@@ -64,11 +67,11 @@ const ChainPage = (): ReactElement => {
   const handleGenerateNFTDraft = async (ev: FormEvent<HTMLFormElement>): Promise<void> => {
     ev.preventDefault();
 
-    const prompt = formData.prompt.value;
+    const prompt = promptFormData.prompt.value;
 
     if (!isPromptValid(prompt)) {
-      setFormData(
-        produce(formData, (draft) => {
+      setPromptFormData(
+        produce(promptFormData, (draft) => {
           draft.prompt.error =
             'Prompt can only contain letters, numbers, commas, and periods';
         })
@@ -76,7 +79,7 @@ const ChainPage = (): ReactElement => {
       return;
     }
 
-    setFormStatus('submitting');
+    setPromptFormStatus('submitting');
 
     await fetch('http://localhost:4600/api/nft', {
       method: 'POST',
@@ -90,12 +93,12 @@ const ChainPage = (): ReactElement => {
           const error = data as ApiErrorResponse;
 
           const updateForm = (status: FormStatus) => {
-            setFormData(
-              produce(formData, (draft) => {
+            setPromptFormData(
+              produce(promptFormData, (draft) => {
                 draft.prompt.error = error.message;
               })
             );
-            setFormStatus(status);
+            setPromptFormStatus(status);
           };
 
           switch (error.status) {
@@ -115,14 +118,14 @@ const ChainPage = (): ReactElement => {
 
         const nftDraft = data as NFT;
 
-        setFormStatus('idle');
+        setPromptFormStatus('idle');
         setNftDraft(nftDraft);
         return nftDraft;
       })
       .catch((err) => {
         // TODO: add toast
         alert('Something went wrong. Please try again.');
-        setFormStatus('idle');
+        setPromptFormStatus('idle');
       });
   };
 
@@ -131,9 +134,30 @@ const ChainPage = (): ReactElement => {
     return regex.test(prompt) ? true : false;
   };
 
-  // TODO: send data to blockchain, handle responses, add return type
-  const handleMintNFT = (ev: FormEvent<HTMLFormElement>) => {
+  // TODO: send data to blockchain, handle responses, add tests
+  // prettier-ignore
+  const handleMintNFT = async (ev: FormEvent<HTMLFormElement>): Promise<void> => {
     ev.preventDefault();
+
+    setNftDraftFormStatus('submitting');
+
+    await fetch('http://localhost:4600/api/nft/pinata', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nftDraft }),
+    })
+      .then(async (res: Response) => {
+        if (!res.ok) {
+          throw new Error();
+        }
+
+        setNftDraftFormStatus('idle');
+      })
+      .catch((err) => {
+        // TODO: add toast
+        alert('Something went wrong. Please try again.');
+        setNftDraftFormStatus('idle');
+      });
   };
 
   return (
@@ -157,7 +181,7 @@ const ChainPage = (): ReactElement => {
                 name="prompt"
                 rows={4}
                 placeholder="Describe your image"
-                value={formData.prompt.value}
+                value={promptFormData.prompt.value}
                 onChange={(e) => handleInputChange(e)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
@@ -171,8 +195,8 @@ const ChainPage = (): ReactElement => {
                   }
                 }}
               />
-              {formData.prompt.error && (
-                <span className="error">{formData.prompt.error}</span>
+              {promptFormData.prompt.error && (
+                <span className="error">{promptFormData.prompt.error}</span>
               )}
               {/* always render to prevent layout shift */}
               {/* <span className='error'>{formData.prompt.error}</span> */}
@@ -180,8 +204,10 @@ const ChainPage = (): ReactElement => {
             <AsyncButton
               text="Generate"
               type="submit"
-              disabled={formStatus === 'invalid' || formStatus === 'blocked'}
-              isLoading={formStatus === 'submitting'}
+              disabled={
+                promptFormStatus === 'invalid' || promptFormStatus === 'blocked'
+              }
+              isLoading={promptFormStatus === 'submitting'}
             />
           </form>
 
@@ -223,7 +249,7 @@ const ChainPage = (): ReactElement => {
                     text="Mint NFT"
                     type="submit"
                     disabled={!nftDraft}
-                    isLoading={false}
+                    isLoading={nftDraftFormStatus === 'submitting'}
                   />
                 </div>
 

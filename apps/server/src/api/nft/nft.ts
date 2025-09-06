@@ -1,9 +1,16 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import rateLimit from 'express-rate-limit';
 
-import { validatePrompt } from '../../middleware/validators/validators';
-import { generateNFTDraft } from '../../services/ai/ai';
 import ApiError from '../../lib/ApiError';
+
+import { generateNFTDraft } from '../../services/ai/ai';
+import { uploadNFT } from '../../services/pinata/pinata';
+
+import {
+  validator,
+  prompt,
+  nftDraft,
+} from '../../middleware/validators/validators';
 
 const NFTRouter = Router();
 
@@ -17,7 +24,7 @@ const limiter = rateLimit({
 });
 
 // prettier-ignore
-NFTRouter.post('/', validatePrompt('[nft][POST]'), limiter, async (req: Request, res: Response, next: NextFunction) => {
+NFTRouter.post('/', validator('[/nft][POST]', prompt), limiter, async (req: Request, res: Response, next: NextFunction) => {
     try {
       const nftDraft = await generateNFTDraft(req.body.prompt);
       res.status(200).json(nftDraft);
@@ -26,5 +33,15 @@ NFTRouter.post('/', validatePrompt('[nft][POST]'), limiter, async (req: Request,
     }
   }
 );
+
+// prettier-ignore
+NFTRouter.post('/pinata', validator('[/nft/pinata][POST]', nftDraft), limiter, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+      const CID = await uploadNFT(req.body.nftDraft);
+      res.status(200).json(CID);
+    } catch (err: unknown) {
+      next(new ApiError(`[nft][POST]: ${err}`, { status: 500, message: 'Something went wrong. Please try again' }));
+    }
+})
 
 export default NFTRouter;
