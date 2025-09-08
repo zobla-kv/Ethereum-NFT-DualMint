@@ -37,8 +37,8 @@ NFTRouter.post('/', validator('[/nft][POST]', prompt), limiter, async (req: Requ
 // prettier-ignore
 NFTRouter.post('/pinata', validator('[/nft/pinata][POST]', nftDraft), limiter, async (req: Request, res: Response, next: NextFunction) => {
   try {
-      const CID = await uploadNFT(req.body.nftDraft);
-      res.status(200).json(CID);
+      const metadataUri = await uploadNFT(req.body.nftDraft);
+      res.status(200).json(metadataUri);
     } catch (err: unknown) {
       next(new ApiError(`[nft][POST]: ${err}`, { status: 500, message: 'Something went wrong. Please try again' }));
     }

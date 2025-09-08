@@ -21,6 +21,9 @@ import { useAuth } from '../../context/AuthContext';
 import MainLayout from '../../layout/MainLayout';
 import AsyncButton from '../../components/ui/AsyncButton/AsyncButton';
 
+import { useWriteContract } from 'wagmi';
+import { abi } from '../../../../contracts/artifacts/contracts/DualMintNFT.sol/DualMintNFT.json';
+
 type FormStatus = 'idle' | 'submitting' | 'invalid' | 'blocked';
 
 interface FormData {
@@ -35,8 +38,9 @@ interface FormData {
 // TODO: allow user to update name and description
 const ChainPage = (): ReactElement => {
   const { user } = useAuth();
+  const { writeContractAsync } = useWriteContract();
 
-  const [nftDraft, setNftDraft] = useState<NFT | null>(null);
+  const [nftDraft, setNftDraft] = useState<NFT | null>(x);
   const [promptFormData, setPromptFormData] = useState<FormData>({
     prompt: {
       value: '',
@@ -141,23 +145,28 @@ const ChainPage = (): ReactElement => {
 
     setNftDraftFormStatus('submitting');
 
-    await fetch('http://localhost:4600/api/nft/pinata', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nftDraft }),
-    })
-      .then(async (res: Response) => {
-        if (!res.ok) {
-          throw new Error();
-        }
-
-        setNftDraftFormStatus('idle');
-      })
-      .catch((err) => {
-        // TODO: add toast
-        alert('Something went wrong. Please try again.');
-        setNftDraftFormStatus('idle');
+    try {
+      const response = await fetch('http://localhost:4600/api/nft/pinata', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nftDraft }),
       });
+
+      const metadataUri = await response.json();
+
+      await writeContractAsync({
+        address: '0x5FbDB2315678afecb367f032d93F642f64180aa3',
+        abi,
+        functionName: 'mint',
+        args: [metadataUri],
+      });
+
+      setNftDraftFormStatus('idle');
+    } catch (err) {
+      // TODO: Add toast
+      alert('Mint failed: ' + err);
+      setNftDraftFormStatus('idle');
+    }
   };
 
   return (
@@ -261,7 +270,7 @@ const ChainPage = (): ReactElement => {
                       name="name"
                       value={nftDraft?.metadata.name || ''}
                       placeholder="Waiting for image..."
-                      disabled={!nftDraft}
+                      disabled
                       className={!nftDraft ? 'animate-pulse' : ''}
                     />
                   </div>
@@ -273,7 +282,7 @@ const ChainPage = (): ReactElement => {
                       name="description"
                       value={nftDraft?.metadata.description || ''}
                       placeholder="Waiting for image..."
-                      disabled={!nftDraft}
+                      disabled
                       className={!nftDraft ? 'animate-pulse' : ''}
                     />
                   </div>

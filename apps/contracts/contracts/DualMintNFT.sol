@@ -50,7 +50,11 @@ contract DualMintNFT is IERC721 {
     return _tokenURIs[tokenId];
   }
 
-  function transferFrom(address from, address to, uint256 tokenId) external {
+  function transferFrom(
+    address from,
+    address to,
+    uint256 tokenId
+  ) external payable {
     _transfer(from, to, tokenId);
   }
 
@@ -58,7 +62,7 @@ contract DualMintNFT is IERC721 {
     address from,
     address to,
     uint256 tokenId
-  ) external {
+  ) external payable {
     _safeTransfer(from, to, tokenId, '');
   }
 
@@ -67,7 +71,7 @@ contract DualMintNFT is IERC721 {
     address to,
     uint256 tokenId,
     bytes calldata data
-  ) external {
+  ) external payable {
     _safeTransfer(from, to, tokenId, data);
   }
 

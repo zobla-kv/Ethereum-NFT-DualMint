@@ -12,7 +12,7 @@ const pinata = new pinataSDK({
 /**
  * Uploads NFT image and metadata to Pinata
  * @param nft - NFT
- * @returns metadata CID
+ * @returns metadataUri - metadata JSON uri
  */
 export async function uploadNFT(nft: NFT): Promise<string> {
   const { name, image: imgUrl } = nft.metadata;
@@ -62,7 +62,7 @@ export async function uploadNFT(nft: NFT): Promise<string> {
     throw new Error(`Pinata: Image upload failed: ${err.message}`);
   }
 
-  const imageCID = `ipfs://${imageResult.IpfsHash}`;
+  const imageCID = `https://${process.env.PINATA_GATEWAY_URL}/ipfs/${imageResult.IpfsHash}`;
 
   // upload metadata to Pinata
   const metadata = { ...nft.metadata, image: imageCID };
@@ -79,5 +79,5 @@ export async function uploadNFT(nft: NFT): Promise<string> {
     throw new Error(`Pinata: Metadata upload failed: ${err.message}`);
   }
 
-  return metadataResult.IpfsHash;
+  return `https://${process.env.PINATA_GATEWAY_URL}/ipfs/${metadataResult.IpfsHash}`;
 }
