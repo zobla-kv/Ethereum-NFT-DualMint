@@ -1,3 +1,43 @@
+:root {
+  --color-primary: #0037ff;
+  --color-accent: #00f5d4;
+  --color-bg: #24203e;
+  --color-text-primary: #ffffff;
+  --color-text-accent: #c0c3c9;
+
+  --font-heading: 'Orbitron', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  --header-height: 6rem;
+  --header-margin-bottom: 2.5rem;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+}
+
+header {
+  background-color: var(--color-bg);
+  font-family: var(--font-heading);
+  height: var(--header-height);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem 3rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  margin-bottom: var(--header-margin-bottom);
+}
+
+main {
+  min-height: calc(100vh - var(--header-height) - var(--header-margin-bottom));
+  max-width: 1440px;
+  margin: 1.25rem auto 0 auto;
+}
+
 h1 {
   font-size: 2rem;
   margin-bottom: 1rem;
@@ -39,12 +79,13 @@ form {
   label {
     margin-left: var(--text-indent);
     font-size: 0.9rem;
-    font-weight: 500;
-    color: #374151;
+    font-weight: 600;
+    color: var(--color-accent);
   }
 
   input,
   textarea {
+    color: var(--color-text-accent);
     width: 100%;
     border: 1px solid;
     border-radius: 4px;

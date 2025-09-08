@@ -1,7 +1,5 @@
 import type { FC } from 'react';
 
-import ThemeToggle from './ThemeToggle/ThemeToggle';
-
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,18 +8,30 @@ const Header: FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className='border flex justify-between items-center py-2 px-4'>
-      <div>
-        <p>address: {user?.address}</p>
-        <p>balance: {user?.balance?.value}</p>
+    <header>
+      <span
+        className="text-3xl text-[var(--color-primary)] font-bold cursor-pointer"
+        onClick={() => navigate('/')}
+      >
+        Ethereum NFT DualMint
+      </span>
+      <div className="flex gap-4">
+        {!user?.status || user.status !== 'connected' ? (
+          <button onClick={connect} className="btn-primary">
+            Metamask
+          </button>
+        ) : (
+          <>
+            <button onClick={() => navigate('/')} className="btn-primary">
+              Switch Chain
+            </button>
+            <button onClick={disconnect} className="btn-primary">
+              Logout
+            </button>
+          </>
+        )}
       </div>
-      <div className='flex gap-4 items-center'>
-        <button className='btn-primary' onClick={connect}>MetaMask</button>
-        <button className='btn-primary' onClick={() => navigate('/')}>Switch chain</button>
-        <button className='btn-primary' onClick={disconnect}>Logout</button>
-        <ThemeToggle />
-      </div>
-    </div>
+    </header>
   );
 };
 

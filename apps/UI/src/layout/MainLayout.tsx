@@ -7,11 +7,9 @@ interface Props {
 
 const MainLayout = ({ children }: Props): ReactElement => {
   return (
-    <div className='border w-full'>
+    <div className="w-full">
       <Header />
-      <main className='min-h-screen max-w-[1440px] border mx-auto mt-5'>
-        {children}
-      </main>
+      <main>{children}</main>
     </div>
   );
 };

@@ -1,9 +1,27 @@
 @import 'tailwindcss';
 
 .btn-primary {
-  @apply bg-blue-600 hover:bg-blue-400 text-white py-2 px-4 rounded;
+  @apply px-4 py-2 rounded-lg transition shadow-lg;
+  color: var(--color-text-primary);
+  background-color: var(--color-primary);
+  &:hover {
+    color: black;
+    background-color: var(--color-accent);
+  }
+}
+
+.chain-card {
+  @apply px-16 py-8 text-lg rounded-2xl border-3 hover:scale-105 transition shadow-lg;
+  border-color: var(--color-primary);
+  background-color: var(--color-primary);
+
+  &:hover {
+    border-color: var(--color-accent);
+  }
 }
 
 .attribute-card {
-  @apply rounded-lg border p-3 text-center flex flex-col gap-1 bg-gray-100 min-w-[220px];
+  @apply rounded-lg border p-3 text-center flex flex-col gap-1 min-w-[220px];
+  color: var(--color-text-accent);
+  font-size: 0.925rem;
 }

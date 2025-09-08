@@ -40,7 +40,7 @@ const ChainPage = (): ReactElement => {
   const { user } = useAuth();
   const { writeContractAsync } = useWriteContract();
 
-  const [nftDraft, setNftDraft] = useState<NFT | null>(x);
+  const [nftDraft, setNftDraft] = useState<NFT | null>(null);
   const [promptFormData, setPromptFormData] = useState<FormData>({
     prompt: {
       value: '',
@@ -231,25 +231,26 @@ const ChainPage = (): ReactElement => {
                 id="address"
                 name="address"
                 value={user?.address}
-                disabled
+                readOnly
+                className="focus:outline-none"
               />
 
               <div className="flex mt-4 gap-5">
                 <div className="text-center min-w-[300px]">
                   {nftDraft ? (
                     <img
-                      className="border-3 border-blue-600 p-2 min-w-[300px] h-[300px] rounded mb-5"
+                      className="border-2 border-[var(--color-accent)] p-2 min-w-[300px] h-[300px] rounded-2xl mb-5"
                       src={nftDraft.metadata.image}
                       alt={nftDraft.metadata.description}
                     />
                   ) : (
-                    <div className="relative border-3 border-gray-300 bg-gray-200 min-w-[300px] h-[300px] rounded mb-5 grid place-items-center">
+                    <div className="relative border-2 border-[var(--color-accent)] min-w-[300px] h-[300px] rounded-lg mb-5 grid place-items-center animate-pulse">
                       <img
                         src={photoLibraryIcon}
                         className="w-[180px] h-[180px]"
                       />
-                      <span className="absolute bottom-5 animate-pulse">
-                        Waiting for image...
+                      <span className="absolute bottom-5">
+                        Waiting for draft...
                       </span>
                     </div>
                   )}
@@ -269,9 +270,9 @@ const ChainPage = (): ReactElement => {
                       id="name"
                       name="name"
                       value={nftDraft?.metadata.name || ''}
-                      placeholder="Waiting for image..."
-                      disabled
-                      className={!nftDraft ? 'animate-pulse' : ''}
+                      placeholder="Waiting for draft..."
+                      readOnly
+                      className="focus:outline-none"
                     />
                   </div>
 
@@ -281,9 +282,9 @@ const ChainPage = (): ReactElement => {
                       id="description"
                       name="description"
                       value={nftDraft?.metadata.description || ''}
-                      placeholder="Waiting for image..."
-                      disabled
-                      className={!nftDraft ? 'animate-pulse' : ''}
+                      placeholder="Waiting for draft..."
+                      readOnly
+                      className="resize-none focus:outline-none"
                     />
                   </div>
 
@@ -295,12 +296,8 @@ const ChainPage = (): ReactElement => {
                           className="attribute-card"
                         >
                           <label>[ {attr?.trait_type || 'Attribute'} ]</label>
-                          <p
-                            className={`font-sm font-bold ${
-                              !nftDraft ? 'animate-pulse' : ''
-                            }`}
-                          >
-                            {attr.value || 'Waiting for image...'}
+                          <p className="font-sm font-bold">
+                            {attr.value || 'Waiting for draft...'}
                           </p>
                         </div>
                       );

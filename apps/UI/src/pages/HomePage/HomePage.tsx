@@ -37,14 +37,29 @@ const HomePage = (): ReactElement => {
 
   return (
     <MainLayout>
-      <>
-        <h1>Home page</h1>
-        {chains.map((chain) => (
-          <button key={chain.id} onClick={() => handleSwitchChain(chain)}>
-            {chain.name}
-          </button>
-        ))}
-      </>
+      <div className="flex flex-col items-center justify-center flex-grow text-center px-6">
+        <div>
+          <h1 className="text-4xl mb-4 mt-10">
+            Mint Your <span className="text-[var(--color-primary)]">NFT</span>{' '}
+            with <span className="text-[var(--color-primary)]">AI</span>
+          </h1>
+          <p className="max-w-xl mb-12 text-[var(--color-text-accent)]">
+            Choose your blockchain network and start minting unique NFTs.
+          </p>
+        </div>
+
+        <div className="flex gap-20 mt-5">
+          {chains.map((chain) => (
+            <button
+              key={chain.id}
+              onClick={() => handleSwitchChain(chain)}
+              className="chain-card"
+            >
+              {chain.name}
+            </button>
+          ))}
+        </div>
+      </div>
     </MainLayout>
   );
 };
