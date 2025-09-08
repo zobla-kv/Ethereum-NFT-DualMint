@@ -3,9 +3,11 @@ import type { FC } from 'react';
 import ThemeToggle from './ThemeToggle/ThemeToggle';
 
 import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const Header: FC = () => {
   const { user, connect, disconnect } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <div className='border flex justify-between items-center py-2 px-4'>
@@ -15,6 +17,7 @@ const Header: FC = () => {
       </div>
       <div className='flex gap-4 items-center'>
         <button className='btn-primary' onClick={connect}>MetaMask</button>
+        <button className='btn-primary' onClick={() => navigate('/')}>Switch chain</button>
         <button className='btn-primary' onClick={disconnect}>Logout</button>
         <ThemeToggle />
       </div>
