@@ -21,3 +21,5 @@
 
 # Deployments
 /ignition/deployments
+
+.env
