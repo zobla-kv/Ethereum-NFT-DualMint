@@ -1,11 +1,22 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { MemoryRouter } from 'react-router';
 import ChainPage from './ChainPage';
-
 import { useAuth } from '../../context/AuthContext';
 
 vi.mock('../../context/AuthContext', () => ({
   useAuth: vi.fn(),
+}));
+
+vi.mock('wagmi', () => ({
+  useWriteContract: vi.fn(() => ({
+    writeContractAsync: vi.fn(),
+  })),
+}));
+
+const mockNavigate = vi.fn();
+vi.mock('react-router-dom', () => ({
+  useNavigate: () => mockNavigate,
 }));
 
 vi.mock('../../components/ui/AsyncButton/AsyncButton', () => ({
@@ -28,18 +39,30 @@ describe('ChainPage', () => {
   });
 
   it('renders title with chain name', () => {
-    render(<ChainPage />);
+    render(
+      <MemoryRouter>
+        <ChainPage />
+      </MemoryRouter>
+    );
     expect(screen.getByText(/Generate NFT on Ethereum/i)).toBeInTheDocument();
   });
 
   it('renders both forms', () => {
-    render(<ChainPage />);
+    render(
+      <MemoryRouter>
+        <ChainPage />
+      </MemoryRouter>
+    );
     expect(screen.getByText('Generate NFT draft')).toBeInTheDocument();
     expect(screen.getByText('Preview NFT')).toBeInTheDocument();
   });
 
   it('updates textarea on change', () => {
-    render(<ChainPage />);
+    render(
+      <MemoryRouter>
+        <ChainPage />
+      </MemoryRouter>
+    );
     const textarea = screen.getByPlaceholderText(
       'Describe your image'
     ) as HTMLTextAreaElement;
@@ -60,7 +83,11 @@ describe('ChainPage', () => {
       }),
     });
 
-    render(<ChainPage />);
+    render(
+      <MemoryRouter>
+        <ChainPage />
+      </MemoryRouter>
+    );
 
     const textarea = screen.getByPlaceholderText('Describe your image');
     const generateButton = screen.getByText('Generate');
@@ -73,9 +100,7 @@ describe('ChainPage', () => {
         'http://localhost:4600/api/nft',
         expect.objectContaining({
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ prompt: 'cat on the moon' }),
         })
       );
@@ -85,7 +110,12 @@ describe('ChainPage', () => {
   it('resets state to idle when fetch throws an error', async () => {
     mockFetch.mockRejectedValueOnce(new Error('Network error'));
 
-    render(<ChainPage />);
+    render(
+      <MemoryRouter>
+        <ChainPage />
+      </MemoryRouter>
+    );
+
     const textarea = screen.getByPlaceholderText('Describe your image');
     const generateButton = screen.getByText('Generate');
 
@@ -98,9 +128,13 @@ describe('ChainPage', () => {
   });
 
   it('renders user address in mint form', () => {
-    render(<ChainPage />);
+    render(
+      <MemoryRouter>
+        <ChainPage />
+      </MemoryRouter>
+    );
     const input = screen.getByLabelText('Address') as HTMLInputElement;
     expect(input.value).toBe('0x123');
-    expect(input.disabled).toBe(true);
+    expect(input.readOnly).toBe(true);
   });
 });

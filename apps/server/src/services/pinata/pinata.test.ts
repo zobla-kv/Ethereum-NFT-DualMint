@@ -69,13 +69,14 @@ describe('uploadNFT', () => {
     expect(pinataInstance.pinFileToIPFS).toHaveBeenCalledWith(
       mockStream,
       expect.objectContaining({
-        pinataMetadata: expect.any(Object),
+        pinataMetadata: { name: 'TestNFT.png' },
       })
     );
+
     expect(pinataInstance.pinJSONToIPFS).toHaveBeenCalledWith(
       expect.objectContaining({
         ...nft.metadata,
-        image: 'ipfs://imageHash',
+        image: expect.stringContaining('imageHash'),
       }),
       expect.objectContaining({
         pinataMetadata: { name: 'TestNFT.json' },

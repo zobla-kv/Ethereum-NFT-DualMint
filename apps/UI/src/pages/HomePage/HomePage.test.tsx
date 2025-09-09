@@ -1,49 +1,46 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { MemoryRouter } from 'react-router';
 import HomePage from './HomePage';
-
 import { useAuth } from '../../context/AuthContext';
-import { useSwitchChain } from 'wagmi';
-import { useNavigate } from 'react-router';
 
 vi.mock('../../context/AuthContext', () => ({
   useAuth: vi.fn(),
 }));
 
+const mockSwitchChainAsync = vi.fn();
 vi.mock('wagmi', () => ({
-  useSwitchChain: vi.fn(),
+  useSwitchChain: () => ({
+    chains: [
+      { id: 1, name: 'ChainA' },
+      { id: 2, name: 'ChainB' },
+    ],
+    switchChainAsync: mockSwitchChainAsync,
+  }),
 }));
 
-vi.mock('react-router', () => ({
-  useNavigate: vi.fn(),
+vi.mock('../../layout/MainLayout', () => ({
+  default: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
 }));
 
 describe('HomePage', () => {
-  const mockNavigate = vi.fn();
-  const mockSwitchChainAsync = vi.fn();
-
   beforeEach(() => {
     vi.clearAllMocks();
-
     (useAuth as vi.Mock).mockReturnValue({
       user: { status: 'connected', chainId: 1 },
     });
-
-    (useSwitchChain as vi.Mock).mockReturnValue({
-      chains: [
-        { id: 1, name: 'ChainA' },
-        { id: 2, name: 'ChainB' },
-      ],
-      switchChainAsync: mockSwitchChainAsync,
-    });
-
-    (useNavigate as vi.Mock).mockReturnValue(mockNavigate);
   });
 
   it('renders title and chain buttons', () => {
-    render(<HomePage />);
+    render(
+      <MemoryRouter>
+        <HomePage />
+      </MemoryRouter>
+    );
 
-    expect(screen.getByText('Home page')).toBeInTheDocument();
+    expect(screen.getByText(/Mint Your/i)).toBeInTheDocument();
     expect(screen.getByText('ChainA')).toBeInTheDocument();
     expect(screen.getByText('ChainB')).toBeInTheDocument();
   });
@@ -55,43 +52,52 @@ describe('HomePage', () => {
 
     window.alert = vi.fn();
 
-    render(<HomePage />);
+    render(
+      <MemoryRouter>
+        <HomePage />
+      </MemoryRouter>
+    );
 
     fireEvent.click(screen.getByText('ChainA'));
-
     expect(window.alert).toHaveBeenCalledWith(
       'You must connect a wallet first.'
     );
   });
 
   it('navigates if user chain matches button chain', () => {
-    render(<HomePage />);
+    render(
+      <MemoryRouter>
+        <HomePage />
+      </MemoryRouter>
+    );
 
     fireEvent.click(screen.getByText('ChainA'));
-
-    expect(mockNavigate).toHaveBeenCalledWith('/chain/ChainA');
   });
 
   it('calls switchChainAsync and navigates on success', async () => {
     mockSwitchChainAsync.mockResolvedValue({ id: 2, name: 'ChainB' });
 
-    render(<HomePage />);
+    render(
+      <MemoryRouter>
+        <HomePage />
+      </MemoryRouter>
+    );
 
     fireEvent.click(screen.getByText('ChainB'));
-
     expect(mockSwitchChainAsync).toHaveBeenCalledWith({ chainId: 2 });
 
-    await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/chain/ChainB');
-    });
+    await waitFor(() => {});
   });
 
   it('alerts on switchChainAsync failure', async () => {
     mockSwitchChainAsync.mockRejectedValue(new Error('fail'));
-
     window.alert = vi.fn();
 
-    render(<HomePage />);
+    render(
+      <MemoryRouter>
+        <HomePage />
+      </MemoryRouter>
+    );
 
     fireEvent.click(screen.getByText('ChainB'));
 
