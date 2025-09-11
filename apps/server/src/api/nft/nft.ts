@@ -40,7 +40,7 @@ NFTRouter.post('/pinata', validator('[/nft/pinata][POST]', nftDraft), limiter, a
       const metadataUri = await uploadNFT(req.body.nftDraft);
       res.status(200).json(metadataUri);
     } catch (err: unknown) {
-      next(new ApiError(`[nft][POST]: ${err}`, { status: 500, message: 'Something went wrong. Please try again' }));
+      next(new ApiError(`[/nft/pinata][POST]: ${err}`, { status: 500, message: 'Something went wrong. Please try again' }));
     }
 })
 
