@@ -36,8 +36,10 @@ interface FormData {
 // TODO: 404 if non existing chain
 // TODO: fix bug. Alert shows when: Enter nft prompt -> submit the form -> reload the page
 // TODO: allow user to update name and description
+// TODO: switch chain on url change
 const ChainPage = (): ReactElement => {
   const { user } = useAuth();
+
   const { writeContractAsync } = useWriteContract();
 
   const [nftDraft, setNftDraft] = useState<NFT | null>(null);
@@ -152,7 +154,11 @@ const ChainPage = (): ReactElement => {
         body: JSON.stringify({ nftDraft }),
       });
 
-      const metadataUri = await response.json();
+      if (!response.ok) {
+        throw new Error('Something went wrong. Please try again.');
+      }
+
+      const metadataUri: string = await response.json();
 
       await writeContractAsync({
         address: '0x5FbDB2315678afecb367f032d93F642f64180aa3',
