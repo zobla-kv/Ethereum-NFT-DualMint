@@ -6,9 +6,10 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   isLoading: boolean;
 }
 
-const AsyncButton: FC<Props> = ({ text, isLoading, ...props}): ReactElement => {
+// prettier-ignore
+const AsyncButton: FC<Props> = ({ text, isLoading, className = '', ...props}): ReactElement => {
   return (
-    <button className={`btn-primary ${isLoading ? 'loading' : ''}`} {...props}>
+    <button className={`btn-primary ${isLoading ? 'loading' : ''} ${className}`} {...props}>
       {isLoading ? <Spinner /> : text}
     </button>
   );
