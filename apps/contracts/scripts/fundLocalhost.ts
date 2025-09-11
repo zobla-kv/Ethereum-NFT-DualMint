@@ -18,7 +18,7 @@ const client = createWalletClient({
 
 const txHash = await client.sendTransaction({
   to: recipient,
-  value: parseEther('0.1'), // amount in ETH
+  value: parseEther('10'),
 });
 
 const receipt = await waitForTransactionReceipt(client, { hash: txHash });
