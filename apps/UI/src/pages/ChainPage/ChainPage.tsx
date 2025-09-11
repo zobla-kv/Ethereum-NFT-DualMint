@@ -22,7 +22,9 @@ import MainLayout from '../../layout/MainLayout';
 import AsyncButton from '../../components/ui/AsyncButton/AsyncButton';
 
 import { useWriteContract } from 'wagmi';
-import { abi } from '../../../../contracts/artifacts/contracts/DualMintNFT.sol/DualMintNFT.json';
+import { waitForTransactionReceipt } from 'wagmi/actions';
+import { useContract } from '../../hooks/useContract';
+import config from '../../../wagmi.config';
 
 type FormStatus = 'idle' | 'submitting' | 'invalid' | 'blocked';
 
@@ -39,10 +41,9 @@ interface FormData {
 // TODO: switch chain on url change
 const ChainPage = (): ReactElement => {
   const { user } = useAuth();
-
+  const contract = useContract();
   const { writeContractAsync } = useWriteContract();
 
-  const [nftDraft, setNftDraft] = useState<NFT | null>(null);
   const [promptFormData, setPromptFormData] = useState<FormData>({
     prompt: {
       value: '',
@@ -50,10 +51,18 @@ const ChainPage = (): ReactElement => {
     },
   });
   const [promptFormStatus, setPromptFormStatus] = useState<FormStatus>('idle');
+
+  const [nftDraft, setNftDraft] = useState<NFT | null>(null);
   const [nftDraftFormStatus, setNftDraftFormStatus] =
     useState<FormStatus>('idle');
+  const [nftDraftFormResponse, setNftDraftFormResponse] = useState<
+    `0x${string}` | null
+  >(null);
+  const [nftDraftFormError, setNftDraftFormError] = useState<string | null>(
+    null
+  );
 
-  const handleInputChange = (ev: ChangeEvent<HTMLTextAreaElement>): void => {
+  const handlePromptChange = (ev: ChangeEvent<HTMLTextAreaElement>): void => {
     const value = ev.target.value;
 
     if (promptFormStatus !== 'submitting' && promptFormStatus !== 'blocked') {
@@ -86,8 +95,10 @@ const ChainPage = (): ReactElement => {
     }
 
     setPromptFormStatus('submitting');
+    setNftDraftFormError(null);
+    setNftDraftFormResponse(null);
 
-    await fetch('http://localhost:4600/api/nft', {
+    fetch('http://localhost:4600/api/nft', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ prompt }),
@@ -140,38 +151,72 @@ const ChainPage = (): ReactElement => {
     return regex.test(prompt) ? true : false;
   };
 
-  // TODO: send data to blockchain, handle responses, add tests
   // prettier-ignore
   const handleMintNFT = async (ev: FormEvent<HTMLFormElement>): Promise<void> => {
     ev.preventDefault();
 
+    setNftDraftFormError(null);
+    setNftDraftFormResponse(null);
     setNftDraftFormStatus('submitting');
 
-    try {
-      const response = await fetch('http://localhost:4600/api/nft/pinata', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nftDraft }),
-      });
+    const uploadMetadata = async (): Promise<string> => {
+      try {
+        const response = await fetch('http://localhost:4600/api/nft/pinata', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nftDraft }),
+        });
 
-      if (!response.ok) {
+        if (!response.ok) {
+          throw new Error();
+        }
+
+        return await response.json();
+      } catch (err: unknown) {
         throw new Error('Something went wrong. Please try again.');
       }
+    };
 
-      const metadataUri: string = await response.json();
+    const mintOnChain = async (metadataUri: string): Promise<`0x${string}`> => {
+      try {
+        const txHash = await writeContractAsync({
+          address: contract.address,
+          abi: contract.abi,
+          functionName: contract.mintFn,
+          args: [metadataUri],
+        });
 
-      await writeContractAsync({
-        address: '0x5FbDB2315678afecb367f032d93F642f64180aa3',
-        abi,
-        functionName: 'mint',
-        args: [metadataUri],
-      });
+        const receipt = await waitForTransactionReceipt(config, {
+          hash: txHash,
+        });
 
+        return receipt.transactionHash;
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          throw new Error(err.message.split('\n')[0]);
+        }
+        throw new Error('Something went wrong. Please try again.');
+      }
+    };
+
+    try {
+      const metadataUri = await uploadMetadata();
+      const txHash = await mintOnChain(metadataUri);
+      setNftDraftFormResponse(txHash);
       setNftDraftFormStatus('idle');
-    } catch (err) {
-      // TODO: Add toast
-      alert('Mint failed: ' + err);
+    } catch (err: unknown) {
+      setNftDraftFormError(formatError(err));
       setNftDraftFormStatus('idle');
+    }
+  };
+
+  const formatError = (err: unknown): string => {
+    if (typeof err === 'string') {
+      return err;
+    } else if (err instanceof Error) {
+      return err.message;
+    } else {
+      return 'Something went wrong. Please try again.';
     }
   };
 
@@ -197,7 +242,7 @@ const ChainPage = (): ReactElement => {
                 rows={4}
                 placeholder="Describe your image"
                 value={promptFormData.prompt.value}
-                onChange={(e) => handleInputChange(e)}
+                onChange={(e) => handlePromptChange(e)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
@@ -220,7 +265,9 @@ const ChainPage = (): ReactElement => {
               text="Generate"
               type="submit"
               disabled={
-                promptFormStatus === 'invalid' || promptFormStatus === 'blocked'
+                promptFormStatus === 'invalid' ||
+                promptFormStatus === 'blocked' ||
+                nftDraftFormStatus === 'submitting'
               }
               isLoading={promptFormStatus === 'submitting'}
             />
@@ -242,7 +289,7 @@ const ChainPage = (): ReactElement => {
               />
 
               <div className="flex mt-4 gap-5">
-                <div className="text-center min-w-[300px]">
+                <div className="w-[300px]">
                   {nftDraft ? (
                     <img
                       className="border-2 border-[var(--color-accent)] p-2 min-w-[300px] h-[300px] rounded-2xl mb-5"
@@ -266,7 +313,24 @@ const ChainPage = (): ReactElement => {
                     type="submit"
                     disabled={!nftDraft}
                     isLoading={nftDraftFormStatus === 'submitting'}
+                    className="block mx-auto"
                   />
+                  <div className="mt-5 text-center">
+                    {nftDraftFormError && (
+                      <span className="error">
+                        Mint Failed.
+                        <br />
+                        Reason: {nftDraftFormError}
+                      </span>
+                    )}
+                    {nftDraftFormResponse && !nftDraftFormError && (
+                      <span className="success">
+                        NFT minted successfully.
+                        <br />
+                        Transaction hash: {nftDraftFormResponse}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 w-full">
