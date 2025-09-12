@@ -258,14 +258,28 @@ const ChainPage = (): ReactElement => {
 
   return (
     <MainLayout>
-      <div>
-        <h1 className="text-center mt-5">
-          Generate NFT on {user?.chain?.name}
-        </h1>
-        <div className="flex">
+      <div className="flex justify-between">
+        <div>
+          <div className="h-[150px] px-4">
+            <h2 className="text-center mt-5">
+              Chain:{' '}
+              <span className="text-[var(--color-accent)]">
+                {user?.chain?.name}
+              </span>
+            </h2>
+            {user?.chain?.testnet ? (
+              <p className="text-green-500 text-center mt-0 mb-5">
+                You are on testnet. Minting is free.
+              </p>
+            ) : (
+              <p className="text-red-500 text-center mt-0 mb-5">
+                ⚠️ You are on MAINNET. Minting an NFT will have real gas fees.
+              </p>
+            )}
+          </div>
           <form
             onSubmit={(e) => handleGenerateNFTDraft(e)}
-            className="w-[400px]"
+            className="w-[400px] mt-5"
           >
             <h2>Generate NFT draft</h2>
             <label htmlFor="prompt" className="sr-only">
@@ -275,6 +289,7 @@ const ChainPage = (): ReactElement => {
               <textarea
                 id="prompt"
                 name="prompt"
+                className="resize-none"
                 rows={4}
                 placeholder="Describe your image"
                 value={promptForm.data.prompt}
@@ -308,113 +323,113 @@ const ChainPage = (): ReactElement => {
               isLoading={promptForm.status === 'submitting'}
             />
           </form>
+        </div>
 
-          <form
-            onSubmit={(e) => handleMintNFT(e)}
-            className="w-[820px] min-h-[400px]"
-          >
-            <h2>Preview NFT</h2>
-            <fieldset>
-              <label htmlFor="address">Address</label>
-              <input
-                id="address"
-                name="address"
-                value={user?.address}
-                readOnly
-                className="focus:outline-none"
-              />
+        <form
+          onSubmit={(e) => handleMintNFT(e)}
+          className="w-[820px] min-h-[400px]"
+        >
+          <h2>Preview NFT</h2>
+          <fieldset>
+            <label htmlFor="address">Address</label>
+            <input
+              id="address"
+              name="address"
+              value={user?.address}
+              readOnly
+              className="focus:outline-none"
+            />
 
-              <div className="flex mt-4 gap-5">
-                <div className="w-[300px]">
-                  {nftDraftForm.data ? (
-                    <img
-                      className="border-2 border-[var(--color-accent)] p-2 min-w-[300px] h-[300px] rounded-2xl mb-5"
-                      src={nftDraftForm.data.nft?.metadata.image}
-                      alt={nftDraftForm.data.nft?.metadata.description}
-                    />
-                  ) : (
-                    <div className="relative border-2 border-[var(--color-accent)] min-w-[300px] h-[300px] rounded-lg mb-5 grid place-items-center animate-pulse">
-                      <img
-                        src={photoLibraryIcon}
-                        className="w-[180px] h-[180px]"
-                      />
-                      <span className="absolute bottom-5">
-                        Waiting for draft...
-                      </span>
-                    </div>
-                  )}
-
-                  <AsyncButton
-                    text="Mint NFT"
-                    type="submit"
-                    disabled={!nftDraftForm.data}
-                    isLoading={nftDraftForm.status === 'submitting'}
-                    className="block mx-auto"
+            <div className="flex mt-4 gap-5">
+              <div className="w-[300px]">
+                {nftDraftForm.data.nft?.metadata ? (
+                  <img
+                    className="border-2 border-[var(--color-accent)] p-2 min-w-[300px] h-[300px] rounded-2xl mb-5"
+                    src={nftDraftForm.data.nft?.metadata.image}
+                    alt={nftDraftForm.data.nft?.metadata.description}
                   />
-                  <div className="mt-5 text-center">
-                    {nftDraftForm.error && (
-                      <span className="error">
-                        Mint Failed.
-                        <br />
-                        Reason: {nftDraftForm.error}
-                      </span>
-                    )}
-                    {nftDraftForm.data.response && !nftDraftForm.error && (
-                      <span className="success">
-                        NFT minted successfully.
-                        <br />
-                        Transaction hash: {nftDraftForm.data.response}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 w-full">
-                  <div className="col-span-2">
-                    <label htmlFor="name">[ Name ]</label>
-                    <input
-                      id="name"
-                      name="name"
-                      value={nftDraftForm.data.nft?.metadata.name || ''}
-                      placeholder="Waiting for draft..."
-                      readOnly
-                      className="focus:outline-none"
+                ) : (
+                  <div className="relative border-2 border-[var(--color-accent)] min-w-[300px] h-[300px] rounded-lg mb-5 grid place-items-center animate-pulse">
+                    <img
+                      src={photoLibraryIcon}
+                      className="w-[180px] h-[180px]"
                     />
+                    <span className="absolute bottom-5">
+                      Waiting for draft...
+                    </span>
                   </div>
+                )}
 
-                  <div className="col-span-2">
-                    <label htmlFor="description">[ Description ]</label>
-                    <textarea
-                      id="description"
-                      name="description"
-                      value={nftDraftForm.data.nft?.metadata.description || ''}
-                      placeholder="Waiting for draft..."
-                      readOnly
-                      className="resize-none focus:outline-none"
-                    />
-                  </div>
-
-                  {(
-                    nftDraftForm.data.nft?.metadata.attributes ||
-                    Array(5).fill({})
-                  ).map((attr, index) => {
-                    return (
-                      <div
-                        key={attr?.trait_type || index}
-                        className="attribute-card"
-                      >
-                        <label>[ {attr?.trait_type || 'Attribute'} ]</label>
-                        <p className="font-sm font-bold">
-                          {attr.value || 'Waiting for draft...'}
-                        </p>
-                      </div>
-                    );
-                  })}
+                <AsyncButton
+                  text="Mint NFT"
+                  type="submit"
+                  disabled={!nftDraftForm.data}
+                  isLoading={nftDraftForm.status === 'submitting'}
+                  className="block mx-auto"
+                />
+                <div className="mt-5 text-center">
+                  {nftDraftForm.error && (
+                    <span className="error">
+                      Mint Failed.
+                      <br />
+                      Reason: {nftDraftForm.error}
+                    </span>
+                  )}
+                  {nftDraftForm.data.response && !nftDraftForm.error && (
+                    <span className="success">
+                      NFT minted successfully.
+                      <br />
+                      Transaction hash: {nftDraftForm.data.response}
+                    </span>
+                  )}
                 </div>
               </div>
-            </fieldset>
-          </form>
-        </div>
+
+              <div className="grid grid-cols-2 gap-4 w-full">
+                <div className="col-span-2">
+                  <label htmlFor="name">[ Name ]</label>
+                  <input
+                    id="name"
+                    name="name"
+                    value={nftDraftForm.data.nft?.metadata.name || ''}
+                    placeholder="Waiting for draft..."
+                    readOnly
+                    className="focus:outline-none"
+                  />
+                </div>
+
+                <div className="col-span-2">
+                  <label htmlFor="description">[ Description ]</label>
+                  <textarea
+                    id="description"
+                    name="description"
+                    value={nftDraftForm.data.nft?.metadata.description || ''}
+                    placeholder="Waiting for draft..."
+                    readOnly
+                    className="resize-none focus:outline-none"
+                  />
+                </div>
+
+                {(
+                  nftDraftForm.data.nft?.metadata.attributes ||
+                  Array(4).fill({})
+                ).map((attr, index) => {
+                  return (
+                    <div
+                      key={attr?.trait_type || index}
+                      className="attribute-card"
+                    >
+                      <label>[ {attr?.trait_type || 'Attribute'} ]</label>
+                      <p className="font-sm font-bold">
+                        {attr.value || 'Waiting for draft...'}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </fieldset>
+        </form>
       </div>
     </MainLayout>
   );

@@ -9,7 +9,7 @@
   --font-body: 'Inter', sans-serif;
 
   --header-height: 6rem;
-  --header-margin-bottom: 2.5rem;
+  --header-margin-bottom: 1rem;
 }
 
 body {
@@ -35,7 +35,7 @@ header {
 main {
   min-height: calc(100vh - var(--header-height) - var(--header-margin-bottom));
   max-width: 1440px;
-  margin: 1.25rem auto 0 auto;
+  margin: 1rem auto 0 auto;
 }
 
 h1 {
@@ -66,14 +66,12 @@ button {
 form {
   --text-indent: 0.25rem;
 
-  margin-top: 1.25rem;
-  margin: auto;
   padding: 1.25rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1.25rem;
-  border: 1px solid;
+  border: 3px solid;
   border-radius: 8px;
 
   label {

@@ -65,13 +65,19 @@ describe('ChainPage', () => {
     (waitForTransactionReceipt as vi.Mock) = mockWaitForTx;
   });
 
-  it('renders title with chain name', () => {
+  it('renders chain name in the chain section', () => {
     render(
       <MemoryRouter>
         <ChainPage />
       </MemoryRouter>
     );
-    expect(screen.getByText(/Generate NFT on Ethereum/i)).toBeInTheDocument();
+
+    const chainHeading = screen.getByRole('heading', {
+      level: 2,
+      name: /Chain:\s*Ethereum/i,
+    });
+
+    expect(chainHeading).toBeInTheDocument();
   });
 
   it('renders both forms', () => {
