@@ -21,7 +21,6 @@
 }
 
 .attribute-card {
-  @apply rounded-lg border p-3 text-center flex flex-col gap-1 min-w-[220px];
+  @apply rounded-lg border p-3 text-center min-w-[220px];
   color: var(--color-text-accent);
-  font-size: 0.925rem;
 }

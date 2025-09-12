@@ -259,7 +259,7 @@ const ChainPage = (): ReactElement => {
   return (
     <MainLayout>
       <div className="flex justify-between">
-        <div>
+        <div className="w-[400px]">
           <div className="h-[150px] px-4">
             <h2 className="text-center mt-5">
               Chain:{' '}
@@ -268,19 +268,16 @@ const ChainPage = (): ReactElement => {
               </span>
             </h2>
             {user?.chain?.testnet ? (
-              <p className="text-green-500 text-center mt-0 mb-5">
+              <p className="text-green-500 text-center text-sm mt-1 mb-5">
                 You are on testnet. Minting is free.
               </p>
             ) : (
-              <p className="text-red-500 text-center mt-0 mb-5">
+              <p className="text-red-500 text-center text-sm mt-1 mb-5">
                 ⚠️ You are on MAINNET. Minting an NFT will have real gas fees.
               </p>
             )}
           </div>
-          <form
-            onSubmit={(e) => handleGenerateNFTDraft(e)}
-            className="w-[400px] mt-5"
-          >
+          <form onSubmit={(e) => handleGenerateNFTDraft(e)} className="mt-5">
             <h2>Generate NFT draft</h2>
             <label htmlFor="prompt" className="sr-only">
               Prompt
@@ -289,7 +286,7 @@ const ChainPage = (): ReactElement => {
               <textarea
                 id="prompt"
                 name="prompt"
-                className="resize-none"
+                className="resize-none !text-base"
                 rows={4}
                 placeholder="Describe your image"
                 value={promptForm.data.prompt}
@@ -363,7 +360,7 @@ const ChainPage = (): ReactElement => {
                 <AsyncButton
                   text="Mint NFT"
                   type="submit"
-                  disabled={!nftDraftForm.data}
+                  disabled={!nftDraftForm.data.nft}
                   isLoading={nftDraftForm.status === 'submitting'}
                   className="block mx-auto"
                 />
@@ -420,9 +417,10 @@ const ChainPage = (): ReactElement => {
                       className="attribute-card"
                     >
                       <label>[ {attr?.trait_type || 'Attribute'} ]</label>
-                      <p className="font-sm font-bold">
+                      <br />
+                      <span className="text-xs font-bold relative top-2 opacity-60">
                         {attr.value || 'Waiting for draft...'}
-                      </p>
+                      </span>
                     </div>
                   );
                 })}
