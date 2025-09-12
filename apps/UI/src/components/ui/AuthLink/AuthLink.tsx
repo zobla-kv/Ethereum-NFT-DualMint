@@ -9,14 +9,13 @@ const AuthLink: FC<LinkProps> = ({ to, children }): ReactElement => {
   const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
     if (user?.status !== 'connected') {
       e.preventDefault();
-      // TODO: add toast
       alert('You must connect a wallet first.');
       return;
     }
   };
 
   return (
-    <Link to={to} className='btn-primary' onClick={handleClick}>
+    <Link to={to} className="btn-primary" onClick={handleClick}>
       {children}
     </Link>
   );
