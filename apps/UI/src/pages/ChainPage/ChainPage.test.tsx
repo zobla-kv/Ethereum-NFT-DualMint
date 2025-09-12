@@ -3,15 +3,34 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router';
 import ChainPage from './ChainPage';
 import { useAuth } from '../../context/AuthContext';
+import { useWriteContract } from 'wagmi';
+import { waitForTransactionReceipt } from 'wagmi/actions';
+import type { NFT } from '@nft/types/NFT';
 
 vi.mock('../../context/AuthContext', () => ({
   useAuth: vi.fn(),
 }));
 
-vi.mock('wagmi', () => ({
-  useWriteContract: vi.fn(() => ({
-    writeContractAsync: vi.fn(),
-  })),
+vi.mock('wagmi', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('wagmi')>();
+  return {
+    ...actual,
+    useWriteContract: vi.fn(() => ({
+      writeContractAsync: vi.fn(),
+    })),
+  };
+});
+
+vi.mock('wagmi/actions', () => ({
+  waitForTransactionReceipt: vi.fn(),
+}));
+
+vi.mock('../../hooks/useContract', () => ({
+  useContract: () => ({
+    address: '0xContract',
+    abi: [],
+    mintFn: 'mint',
+  }),
 }));
 
 const mockNavigate = vi.fn();
@@ -25,9 +44,12 @@ vi.mock('../../components/ui/AsyncButton/AsyncButton', () => ({
 
 describe('ChainPage', () => {
   const mockFetch = vi.fn();
+  const mockWriteContractAsync = vi.fn();
+  const mockWaitForTx = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
+
     (useAuth as vi.Mock).mockReturnValue({
       user: {
         address: '0x123',
@@ -35,7 +57,12 @@ describe('ChainPage', () => {
         status: 'connected',
       },
     });
+
     global.fetch = mockFetch;
+    (useWriteContract as vi.Mock).mockReturnValue({
+      writeContractAsync: mockWriteContractAsync,
+    });
+    (waitForTransactionReceipt as vi.Mock) = mockWaitForTx;
   });
 
   it('renders title with chain name', () => {
@@ -136,5 +163,70 @@ describe('ChainPage', () => {
     const input = screen.getByLabelText('Address') as HTMLInputElement;
     expect(input.value).toBe('0x123');
     expect(input.readOnly).toBe(true);
+  });
+
+  it('uploads metadata and mints NFT successfully', async () => {
+    const fakeNFT: NFT = {
+      metadata: {
+        image: 'http://example.com/fake.png',
+        name: 'Fake NFT',
+        description: 'Fake Description',
+        attributes: [{ trait_type: 'Color', value: 'Red' }],
+      },
+    };
+
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => fakeNFT,
+    });
+
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => 'ipfs://fakeMetadataUri',
+    });
+
+    mockWriteContractAsync.mockResolvedValueOnce('0xFAKEHASH');
+    mockWaitForTx.mockResolvedValueOnce({ transactionHash: '0xFAKEHASH' });
+
+    render(
+      <MemoryRouter>
+        <ChainPage />
+      </MemoryRouter>
+    );
+
+    fireEvent.change(screen.getByPlaceholderText(/Describe your image/i), {
+      target: { value: 'A red NFT' },
+    });
+
+    fireEvent.click(screen.getByText('Generate'));
+
+    await waitFor(() =>
+      expect(screen.getByDisplayValue(/Fake NFT/)).toBeInTheDocument()
+    );
+
+    fireEvent.click(screen.getByText('Mint NFT'));
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledWith(
+        'http://localhost:4600/api/nft/pinata',
+        expect.objectContaining({
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nftDraft: fakeNFT }),
+        })
+      );
+
+      expect(mockWriteContractAsync).toHaveBeenCalledWith(
+        expect.objectContaining({
+          args: ['ipfs://fakeMetadataUri'],
+        })
+      );
+      expect(mockWaitForTx).toHaveBeenCalled();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(/NFT minted successfully/i)).toBeInTheDocument();
+      expect(screen.getByText(/0xFAKEHASH/i)).toBeInTheDocument();
+    });
   });
 });

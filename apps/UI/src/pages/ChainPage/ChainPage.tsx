@@ -9,7 +9,7 @@ import {
 
 import { produce } from 'immer';
 
-import type { NFT, NFTMetadata } from '@nft/types/NFT';
+import type { NFT } from '@nft/types/NFT';
 
 import {
   type NFTDraftResponse,
@@ -40,7 +40,7 @@ interface PromptForm {
 
 interface NFTDraftForm {
   address: `0x${string}`;
-  metadata: NFTMetadata;
+  nft: NFT;
   response: `0x${string}` | null;
 }
 
@@ -56,7 +56,7 @@ const ChainPage = (): ReactElement => {
   const [promptForm, setPromptForm] = useState<Form<PromptForm>>({
     data: {},
     status: 'idle',
-    error: 'test',
+    error: null,
   });
 
   const [nftDraftForm, setNftDraftForm] = useState<Form<NFTDraftForm>>({
@@ -147,7 +147,7 @@ const ChainPage = (): ReactElement => {
 
         setNftDraftForm(
           produce(nftDraftForm, (form) => {
-            form.data.metadata = nftDraft.metadata;
+            form.data.nft = nftDraft;
           })
         );
         return nftDraft;
@@ -187,7 +187,7 @@ const ChainPage = (): ReactElement => {
         const response = await fetch('http://localhost:4600/api/nft/pinata', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ nftDraft: nftDraftForm.data.metadata }),
+          body: JSON.stringify({ nftDraft: nftDraftForm.data.nft }),
         });
 
         if (!response.ok) {
@@ -329,8 +329,8 @@ const ChainPage = (): ReactElement => {
                   {nftDraftForm.data ? (
                     <img
                       className="border-2 border-[var(--color-accent)] p-2 min-w-[300px] h-[300px] rounded-2xl mb-5"
-                      src={nftDraftForm.data.metadata?.image}
-                      alt={nftDraftForm.data.metadata?.description}
+                      src={nftDraftForm.data.nft?.metadata.image}
+                      alt={nftDraftForm.data.nft?.metadata.description}
                     />
                   ) : (
                     <div className="relative border-2 border-[var(--color-accent)] min-w-[300px] h-[300px] rounded-lg mb-5 grid place-items-center animate-pulse">
@@ -375,7 +375,7 @@ const ChainPage = (): ReactElement => {
                     <input
                       id="name"
                       name="name"
-                      value={nftDraftForm.data.metadata?.name || ''}
+                      value={nftDraftForm.data.nft?.metadata.name || ''}
                       placeholder="Waiting for draft..."
                       readOnly
                       className="focus:outline-none"
@@ -387,7 +387,7 @@ const ChainPage = (): ReactElement => {
                     <textarea
                       id="description"
                       name="description"
-                      value={nftDraftForm.data.metadata?.description || ''}
+                      value={nftDraftForm.data.nft?.metadata.description || ''}
                       placeholder="Waiting for draft..."
                       readOnly
                       className="resize-none focus:outline-none"
@@ -395,7 +395,8 @@ const ChainPage = (): ReactElement => {
                   </div>
 
                   {(
-                    nftDraftForm.data.metadata?.attributes || Array(5).fill({})
+                    nftDraftForm.data.nft?.metadata.attributes ||
+                    Array(5).fill({})
                   ).map((attr, index) => {
                     return (
                       <div
