@@ -119,23 +119,24 @@ const ChainPage = (): ReactElement => {
         if (!res.ok) {
           const error = data as ApiErrorResponse;
 
-          const updatePromptForm = (status: FormStatus) => {
-            setPromptForm(
-              produce(promptForm, (form) => {
-                form.status = status;
-                form.error = error.message;
-              })
-            );
-          };
-
           switch (error.status) {
             case 400:
-              updatePromptForm('idle');
+              setPromptForm(
+                produce(promptForm, (form) => {
+                  form.status = 'idle';
+                  form.error = error.message;
+                })
+              );
               return;
 
             case 429:
               // TODO: show message and count immediately?
-              updatePromptForm('blocked');
+              setPromptForm(
+                produce(promptForm, (form) => {
+                  form.status = 'blocked';
+                  form.error = error.message;
+                })
+              );
               return;
 
             default:
@@ -152,13 +153,16 @@ const ChainPage = (): ReactElement => {
         );
         return nftDraft;
       })
-      .catch((err) => {
-        // TODO: add toast
-        alert('Something went wrong. Please try again.');
+      .catch((err: unknown) => {
+        setPromptForm((prevForm) =>
+          produce(prevForm, (form) => {
+            form.error = 'Failed to generate NFT draft. Please try again.';
+          })
+        );
       })
       .finally(() => {
-        setPromptForm(
-          produce(promptForm, (form) => {
+        setPromptForm((prevForm) =>
+          produce(prevForm, (form) => {
             form.status = 'idle';
           })
         );

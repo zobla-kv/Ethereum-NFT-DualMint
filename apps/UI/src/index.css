@@ -75,7 +75,7 @@ form {
   .success,
   .error {
     display: block;
-    font-size: 0.925rem;
+    font-size: 0.8rem;
     font-weight: 600;
     min-height: 1.325rem;
     margin-left: 0.25rem;
