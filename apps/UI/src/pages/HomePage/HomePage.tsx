@@ -1,4 +1,5 @@
 import type { ReactElement } from 'react';
+import toast from 'react-hot-toast';
 
 import MainLayout from '../../layout/MainLayout';
 
@@ -14,8 +15,7 @@ const HomePage = (): ReactElement => {
 
   const handleSwitchChain = (chain: Chain) => {
     if (user?.status !== 'connected') {
-      // TODO: add toast
-      alert('You must connect a wallet first.');
+      toast.error('You must connect a wallet first.');
       return;
     }
 
@@ -26,12 +26,10 @@ const HomePage = (): ReactElement => {
 
     switchChainAsync({ chainId: chain.id })
       .then((chain) => {
-        // TODO: add toast
         navigate(`/chain/${chain.name}`);
       })
       .catch((err) => {
-        // TODO: add toast
-        alert('error connecting to: ' + chain.name);
+        toast.error('error connecting to: ' + chain.name);
       });
   };
 

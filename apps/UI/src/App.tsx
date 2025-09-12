@@ -10,6 +10,8 @@ import { AuthProvider } from './context/AuthContext';
 import { RouterProvider } from 'react-router-dom';
 import { router } from './routes';
 
+import { Toaster } from 'react-hot-toast';
+
 const queryClient = new QueryClient();
 
 function App() {
@@ -18,6 +20,7 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <RouterProvider router={router} />
+          <Toaster position="top-center" />;
         </AuthProvider>
       </QueryClientProvider>
     </WagmiProvider>
