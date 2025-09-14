@@ -18,7 +18,7 @@ export const validator = (
       next(
         new ApiError(`${context}: ${error ?? 'Invalid request body'}`, {
           status: 400,
-          message: error ?? 'Invalid request body',
+          message: 'Invalid request body',
         })
       );
       return;
@@ -33,8 +33,12 @@ export const prompt = (body: unknown): ValidatorResult => {
   }
 
   const prompt = body.prompt as string;
-  const regex = /^[a-zA-Z0-9 ,.\n]{1,200}$/;
 
+  if (!prompt.trim()) {
+    return { valid: false, error: "Prompt can't be empty" };
+  }
+
+  const regex = /^[a-zA-Z0-9 ,.\n]{1,200}$/;
   if (!regex.test(prompt)) {
     return {
       valid: false,

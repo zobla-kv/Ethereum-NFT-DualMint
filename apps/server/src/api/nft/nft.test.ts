@@ -23,9 +23,7 @@ describe('API /nft', () => {
     it('should use validatePrompt middleware and return 400 for invalid prompt', async () => {
       const res = await request(app).post('/api/nft').send({ prompt: '!!!' });
       expect(res.statusCode).toBe(400);
-      expect(res.body.message).toContain(
-        'Prompt can only contain letters, numbers, commas, and periods'
-      );
+      expect(res.body.message).toContain('Invalid request body');
     });
 
     it('should return 500 if generateNFTDraft throws an error', async () => {
