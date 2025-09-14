@@ -44,7 +44,6 @@ interface NFTDraftForm {
   response: `0x${string}` | null;
 }
 
-// TODO: fix bug. Alert shows when: Enter nft prompt -> submit the form -> reload the page
 // TODO: allow user to update name and description
 const ChainPage = (): ReactElement => {
   const { chainName } = useParams();
@@ -89,11 +88,12 @@ const ChainPage = (): ReactElement => {
 
     const prompt = promptForm.data.prompt || '';
 
-    if (!isPromptValid(prompt)) {
+    const { isValid, error } = validatePrompt(prompt);
+
+    if (!isValid) {
       setPromptForm(
         produce(promptForm, (form) => {
-          form.error =
-            'Prompt can only contain letters, numbers, commas, and periods';
+          form.error = error;
         })
       );
       return;
@@ -172,9 +172,22 @@ const ChainPage = (): ReactElement => {
       });
   };
 
-  const isPromptValid = (prompt: string): boolean => {
+  const validatePrompt = (
+    prompt: string
+  ): { isValid: boolean; error: string | null } => {
+    if (!prompt.trim()) {
+      return { isValid: false, error: "Prompt can't be empty." };
+    }
+
     const regex = /^[a-zA-Z0-9 ,.\n]{1,200}$/;
-    return regex.test(prompt) ? true : false;
+    if (!regex.test(prompt)) {
+      return {
+        isValid: false,
+        error: 'Prompt can only contain letters, numbers, commas, and periods',
+      };
+    }
+
+    return { isValid: true, error: null };
   };
 
   // prettier-ignore
