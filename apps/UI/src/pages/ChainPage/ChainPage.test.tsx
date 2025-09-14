@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router';
+import { useParams } from 'react-router-dom';
 import ChainPage from './ChainPage';
 import { useAuth } from '../../context/AuthContext';
 import { useWriteContract } from 'wagmi';
@@ -34,9 +35,13 @@ vi.mock('../../hooks/useContract', () => ({
 }));
 
 const mockNavigate = vi.fn();
-vi.mock('react-router-dom', () => ({
-  useNavigate: () => mockNavigate,
-}));
+vi.mock('react-router-dom', () => {
+  return {
+    useNavigate: () => mockNavigate,
+    useParams: vi.fn(),
+    Navigate: ({ to }: { to: string }) => <div>Redirected to {to}</div>,
+  };
+});
 
 vi.mock('../../components/ui/AsyncButton/AsyncButton', () => ({
   default: ({ text }: { text: string }) => <button>{text}</button>,
@@ -58,11 +63,27 @@ describe('ChainPage', () => {
       },
     });
 
+    (useParams as vi.Mock).mockReturnValue({ chainName: 'Ethereum' });
+
     global.fetch = mockFetch;
     (useWriteContract as vi.Mock).mockReturnValue({
       writeContractAsync: mockWriteContractAsync,
     });
     (waitForTransactionReceipt as vi.Mock) = mockWaitForTx;
+  });
+
+  it('redirects to user chain page if chainName is missing', () => {
+    (useParams as vi.Mock).mockReturnValue({ chainName: '' });
+
+    render(
+      <MemoryRouter>
+        <ChainPage />
+      </MemoryRouter>
+    );
+
+    expect(
+      screen.getByText('Redirected to /chain/Ethereum')
+    ).toBeInTheDocument();
   });
 
   it('renders chain name in the chain section', () => {
