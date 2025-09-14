@@ -2,7 +2,7 @@ import type { FC, MouseEvent, ReactElement } from 'react';
 import { Link, type LinkProps } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 
-// TODO: unused
+// Unused
 const AuthLink: FC<LinkProps> = ({ to, children }): ReactElement => {
   const { user } = useAuth();
 
