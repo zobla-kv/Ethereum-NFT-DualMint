@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 .btn-primary {
-  @apply px-4 py-2 rounded-lg transition shadow-lg;
+  @apply relative flex items-center justify-center px-4 py-2 rounded-lg transition shadow-lg;
   color: var(--color-text-primary);
   background-color: var(--color-primary);
   &:hover {

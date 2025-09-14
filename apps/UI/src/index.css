@@ -53,7 +53,7 @@ button {
   min-height: 40px;
 
   &:disabled,
-  &.loading {
+  &:has(.spinner) {
     cursor: default;
     pointer-events: none;
   }

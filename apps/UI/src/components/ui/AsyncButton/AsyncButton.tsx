@@ -9,8 +9,9 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
 // prettier-ignore
 const AsyncButton: FC<Props> = ({ text, isLoading, className = '', ...props}): ReactElement => {
   return (
-    <button className={`btn-primary ${isLoading ? 'loading' : ''} ${className}`} {...props}>
-      {isLoading ? <Spinner /> : text}
+    <button className={`btn-primary ${className}`} {...props}>
+      {isLoading ? <Spinner className='absolute'/> : null}
+      <span className={isLoading ? 'invisible' : ''}>{text}</span>
     </button>
   );
 };

@@ -8,7 +8,6 @@
 }
 
 .spinner {
-  position: absolute;
   width: var(--spinner-size, 20px);
   height: var(--spinner-size, 20px);
   border: calc(var(--spinner-size) / 10) solid transparent;

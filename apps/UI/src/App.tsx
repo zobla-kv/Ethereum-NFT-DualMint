@@ -20,7 +20,7 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <RouterProvider router={router} />
-          <Toaster position="top-center" />;
+          <Toaster position="top-center" />
         </AuthProvider>
       </QueryClientProvider>
     </WagmiProvider>
