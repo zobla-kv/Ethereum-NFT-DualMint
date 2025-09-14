@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import NotFound from './pages/NotFound';
@@ -11,7 +11,11 @@ export const router = createBrowserRouter([
     element: <HomePage />,
   },
   {
-    path: '/chain/:network',
+    path: '/chain',
+    element: <Navigate to="/chain/[null]" replace />,
+  },
+  {
+    path: '/chain/:chainName',
     element: (
       <ProtectedRoute>
         <ChainPage />

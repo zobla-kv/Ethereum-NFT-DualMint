@@ -6,11 +6,9 @@ import {
   type FormEvent,
   type ReactElement,
 } from 'react';
-
-import { produce } from 'immer';
+import { Navigate, useParams } from 'react-router-dom';
 
 import type { NFT } from '@nft/types/NFT';
-
 import {
   type NFTDraftResponse,
   type ApiErrorResponse,
@@ -25,6 +23,8 @@ import { useWriteContract } from 'wagmi';
 import { waitForTransactionReceipt } from 'wagmi/actions';
 import { useContract } from '../../hooks/useContract';
 import config from '../../../wagmi.config';
+
+import { produce } from 'immer';
 
 type FormStatus = 'idle' | 'submitting' | 'invalid' | 'blocked';
 
@@ -44,11 +44,10 @@ interface NFTDraftForm {
   response: `0x${string}` | null;
 }
 
-// TODO: 404 if non existing chain
 // TODO: fix bug. Alert shows when: Enter nft prompt -> submit the form -> reload the page
 // TODO: allow user to update name and description
-// TODO: switch chain on url change
 const ChainPage = (): ReactElement => {
+  const { chainName } = useParams();
   const { user } = useAuth();
   const contract = useContract();
   const { writeContractAsync } = useWriteContract();
@@ -64,6 +63,10 @@ const ChainPage = (): ReactElement => {
     status: 'idle',
     error: null,
   });
+
+  if (!chainName || chainName !== user?.chain?.name) {
+    return <Navigate to={`/chain/${user?.chain?.name}`} replace />;
+  }
 
   const handlePromptChange = (ev: ChangeEvent<HTMLTextAreaElement>): void => {
     const value = ev.target.value;
