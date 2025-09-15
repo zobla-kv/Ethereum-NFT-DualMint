@@ -3,6 +3,14 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router';
 import HomePage from './HomePage';
 import { useAuth } from '../../context/AuthContext';
+import toast from 'react-hot-toast';
+
+vi.mock('react-hot-toast', () => ({
+  default: {
+    error: vi.fn(),
+    success: vi.fn(),
+  },
+}));
 
 vi.mock('../../context/AuthContext', () => ({
   useAuth: vi.fn(),
@@ -45,12 +53,10 @@ describe('HomePage', () => {
     expect(screen.getByText('ChainB')).toBeInTheDocument();
   });
 
-  it('alerts if user is not connected', () => {
+  it("show error toast with 'You must connect a wallet first.' if user is not connected to Metamask", () => {
     (useAuth as vi.Mock).mockReturnValue({
       user: { status: 'disconnected' },
     });
-
-    window.alert = vi.fn();
 
     render(
       <MemoryRouter>
@@ -59,7 +65,7 @@ describe('HomePage', () => {
     );
 
     fireEvent.click(screen.getByText('ChainA'));
-    expect(window.alert).toHaveBeenCalledWith(
+    expect(toast.error).toHaveBeenCalledWith(
       'You must connect a wallet first.'
     );
   });
@@ -89,7 +95,7 @@ describe('HomePage', () => {
     await waitFor(() => {});
   });
 
-  it('alerts on switchChainAsync failure', async () => {
+  it('shows error toast on switch chain failure', async () => {
     mockSwitchChainAsync.mockRejectedValue(new Error('fail'));
     window.alert = vi.fn();
 
@@ -102,7 +108,7 @@ describe('HomePage', () => {
     fireEvent.click(screen.getByText('ChainB'));
 
     await waitFor(() => {
-      expect(window.alert).toHaveBeenCalledWith('error connecting to: ChainB');
+      expect(toast.error).toHaveBeenCalledWith('error connecting to: ChainB');
     });
   });
 });
