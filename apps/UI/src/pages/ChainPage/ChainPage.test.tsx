@@ -231,7 +231,9 @@ describe('ChainPage', () => {
       expect(screen.getByDisplayValue(/Fake NFT/)).toBeInTheDocument()
     );
 
-    fireEvent.click(screen.getByText('Mint NFT'));
+    const mintButtons = screen.getAllByText('Mint NFT');
+    expect(mintButtons).toHaveLength(2);
+    fireEvent.click(mintButtons[0]);
 
     await waitFor(() => {
       expect(mockFetch).toHaveBeenCalledWith(
@@ -252,8 +254,10 @@ describe('ChainPage', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText(/NFT minted successfully/i)).toBeInTheDocument();
-      expect(screen.getByText(/0xFAKEHASH/i)).toBeInTheDocument();
+      expect(
+        screen.getAllByText(/NFT minted successfully/i)[0]
+      ).toBeInTheDocument();
+      expect(screen.getAllByText(/0xFAKEHASH/i)[0]).toBeInTheDocument();
     });
   });
 });
