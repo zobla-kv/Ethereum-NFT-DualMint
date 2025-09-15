@@ -10,7 +10,7 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
 const AsyncButton: FC<Props> = ({ text, isLoading, className = '', ...props}): ReactElement => {
   return (
     <button className={`btn-primary ${className}`} {...props}>
-      {isLoading ? <Spinner className='absolute'/> : null}
+      {isLoading ? <Spinner /> : null}
       <span className={isLoading ? 'invisible' : ''}>{text}</span>
     </button>
   );

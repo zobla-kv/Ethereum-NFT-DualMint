@@ -9,7 +9,9 @@ const MainLayout = ({ children }: Props): ReactElement => {
   return (
     <div className="w-full">
       <Header />
-      <main>{children}</main>
+      <main className="max-w-[1536px] mx-0 2xl:m-auto px-6 xl:px-12">
+        {children}
+      </main>
     </div>
   );
 };

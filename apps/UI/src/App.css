@@ -1,12 +1,15 @@
-@import 'tailwindcss';
+@reference "tailwindcss";
 
 .btn-primary {
-  @apply relative flex items-center justify-center px-4 py-2 rounded-lg transition shadow-lg;
+  @apply relative px-4 py-2 rounded-lg transition shadow-lg text-sm md:text-base;
   color: var(--color-text-primary);
   background-color: var(--color-primary);
   &:hover {
     color: black;
     background-color: var(--color-accent);
+  }
+  .spinner {
+    @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2;
   }
 }
 
@@ -21,6 +24,6 @@
 }
 
 .attribute-card {
-  @apply rounded-lg border p-3 text-center min-w-[220px];
+  @apply border rounded-lg p-2 xl:p-3 text-center;
   color: var(--color-text-accent);
 }

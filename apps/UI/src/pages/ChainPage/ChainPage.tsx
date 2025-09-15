@@ -1,4 +1,4 @@
-import photoLibraryIcon from '../../assets/photo_icon.svg';
+import nftIcon from '../../assets/nft_icon.svg';
 
 import {
   useState,
@@ -278,9 +278,9 @@ const ChainPage = (): ReactElement => {
 
   return (
     <MainLayout>
-      <div className="flex justify-between">
-        <div className="w-[400px]">
-          <div className="h-[150px] px-4">
+      <div className="flex flex-col xl:flex-row justify-between items-center xl:items-start">
+        <div className="w-full sm:max-w-[400px]">
+          <div className="h-[90px] xl:h-[150px] px-4">
             <h2 className="text-center mt-5">
               Chain:{' '}
               <span className="text-[var(--color-accent)]">
@@ -293,12 +293,12 @@ const ChainPage = (): ReactElement => {
               </p>
             ) : (
               <p className="text-red-500 text-center text-sm mt-1 mb-5">
-                ⚠️ You are on MAINNET. Minting an NFT will have real gas fees.
+                ⚠️ You are on MAINNET. Minting NFT will have real gas fees.
               </p>
             )}
           </div>
           <form onSubmit={(e) => handleGenerateNFTDraft(e)} className="mt-5">
-            <h2>Generate NFT draft</h2>
+            <h2 className="text-center">Generate NFT draft</h2>
             <label htmlFor="prompt" className="sr-only">
               Prompt
             </label>
@@ -306,7 +306,7 @@ const ChainPage = (): ReactElement => {
               <textarea
                 id="prompt"
                 name="prompt"
-                className="resize-none !text-base"
+                className="resize-none !text-sm sm:!text-base"
                 rows={4}
                 placeholder="Describe your image"
                 value={promptForm.data.prompt}
@@ -344,65 +344,42 @@ const ChainPage = (): ReactElement => {
 
         <form
           onSubmit={(e) => handleMintNFT(e)}
-          className="w-[820px] min-h-[400px]"
+          className="w-full sm:max-w-[800px] ms-0 xl:ms-7 mt-15 xl:mt-0"
         >
-          <h2>Preview NFT</h2>
-          <fieldset>
+          <h2 className="text-center">Preview NFT</h2>
+          <fieldset className="w-full">
             <label htmlFor="address">Address</label>
-            <input
+            <textarea
               id="address"
               name="address"
               value={user?.address}
               readOnly
-              className="focus:outline-none"
+              className="resize-none focus:outline-none h-12 sm:h-7"
             />
 
-            <div className="flex mt-4 gap-5">
-              <div className="w-[300px]">
+            <div className="flex flex-col xl:flex-row mt-6 xl:mt-4 gap-2 xl:gap-5">
+              <div className="w-full max-w-[300px] mx-auto">
                 {nftDraftForm.data.nft?.metadata ? (
                   <img
-                    className="border-2 border-[var(--color-accent)] p-2 min-w-[300px] h-[300px] rounded-2xl mb-5"
-                    src={nftDraftForm.data.nft?.metadata.image}
+                    className="border-2 border-[var(--color-accent)] p-2 aspect-square rounded-2xl mb-5"
                     alt={nftDraftForm.data.nft?.metadata.description}
                   />
                 ) : (
-                  <div className="relative border-2 border-[var(--color-accent)] min-w-[300px] h-[300px] rounded-lg mb-5 grid place-items-center animate-pulse">
-                    <img
-                      src={photoLibraryIcon}
-                      className="w-[180px] h-[180px]"
-                    />
+                  <div className="relative border-2 border-[var(--color-accent)] aspect-square rounded-lg mb-5 grid place-items-center animate-pulse">
+                    <img src={nftIcon} className="w-[250px] h-[250px] -mt-5" />
                     <span className="absolute bottom-5">
                       Waiting for draft...
                     </span>
                   </div>
                 )}
 
-                <AsyncButton
-                  text="Mint NFT"
-                  type="submit"
-                  disabled={!nftDraftForm.data.nft}
-                  isLoading={nftDraftForm.status === 'submitting'}
-                  className="block mx-auto"
+                <MintButtonAndResponse
+                  form={nftDraftForm}
+                  className="hidden xl:block mt-6"
                 />
-                <div className="mt-5 text-center">
-                  {nftDraftForm.error && (
-                    <span className="error">
-                      Mint Failed.
-                      <br />
-                      Reason: {nftDraftForm.error}
-                    </span>
-                  )}
-                  {nftDraftForm.data.response && !nftDraftForm.error && (
-                    <span className="success">
-                      NFT minted successfully.
-                      <br />
-                      Transaction hash: {nftDraftForm.data.response}
-                    </span>
-                  )}
-                </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 w-full">
+              <div className="-mt-3 xl:-mt-0 grid grid-cols-2 gap-4 w-full">
                 <div className="col-span-2">
                   <label htmlFor="name">[ Name ]</label>
                   <input
@@ -438,7 +415,7 @@ const ChainPage = (): ReactElement => {
                     >
                       <label>[ {attr?.trait_type || 'Attribute'} ]</label>
                       <br />
-                      <span className="text-xs font-bold relative top-2 opacity-60">
+                      <span className="text-xs font-bold opacity-60 relative top-0 xl:top-2">
                         {attr.value || 'Waiting for draft...'}
                       </span>
                     </div>
@@ -446,10 +423,51 @@ const ChainPage = (): ReactElement => {
                 })}
               </div>
             </div>
+            <MintButtonAndResponse
+              form={nftDraftForm}
+              className="block xl:hidden mt-10"
+            />
           </fieldset>
         </form>
       </div>
     </MainLayout>
+  );
+};
+
+// TODO: redesign NFTDraft form responsive design and remove this component
+const MintButtonAndResponse = ({
+  form,
+  className = '',
+}: {
+  form: Form<NFTDraftForm>;
+  className?: string;
+}): ReactElement => {
+  return (
+    <div className={className}>
+      <AsyncButton
+        text="Mint NFT"
+        type="submit"
+        disabled={!form.data.nft}
+        isLoading={form.status === 'submitting'}
+        className="block mx-auto"
+      />
+      <div className="mt-5 text-center">
+        {form.error && (
+          <span className="error">
+            Mint Failed.
+            <br />
+            Reason: {form.error}
+          </span>
+        )}
+        {form.data.response && !form.error && (
+          <span className="success">
+            NFT minted successfully.
+            <br />
+            Transaction hash: {form.data.response}
+          </span>
+        )}
+      </div>
+    </div>
   );
 };
 
