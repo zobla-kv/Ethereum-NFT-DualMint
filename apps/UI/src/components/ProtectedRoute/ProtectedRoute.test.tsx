@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { vi } from 'vitest';
 import ProtectedRoute from './ProtectedRoute';
 import { useAuth } from '../../context/AuthContext';
+import Spinner from '../ui/Spinner/Spinner';
 
 vi.mock('../../context/AuthContext', () => ({
   useAuth: vi.fn(),
@@ -9,6 +10,10 @@ vi.mock('../../context/AuthContext', () => ({
 
 vi.mock('react-router-dom', () => ({
   Navigate: ({ to }: { to: string }) => <div>Navigate to {to}</div>,
+}));
+
+vi.mock('../ui/Spinner/Spinner', () => ({
+  default: () => <div>Spinner</div>,
 }));
 
 describe('ProtectedRoute', () => {
@@ -38,16 +43,16 @@ describe('ProtectedRoute', () => {
     expect(screen.getByText('Navigate to /')).toBeInTheDocument();
   });
 
-  it('shows "Checking authentication..." when connecting', () => {
+  it('shows Spinner when connecting', () => {
     (useAuth as vi.Mock).mockReturnValue({
       user: { status: 'connecting' },
     });
     render(
       <ProtectedRoute>
-        <div>Child</div>
+        <Spinner />
       </ProtectedRoute>
     );
-    expect(screen.getByText('Checking authentication...')).toBeInTheDocument();
+    expect(screen.getByText('Spinner')).toBeInTheDocument();
   });
 
   it('shows "Checking authentication..." when reconnecting', () => {
@@ -56,10 +61,10 @@ describe('ProtectedRoute', () => {
     });
     render(
       <ProtectedRoute>
-        <div>Child</div>
+        <Spinner />
       </ProtectedRoute>
     );
-    expect(screen.getByText('Checking authentication...')).toBeInTheDocument();
+    expect(screen.getByText('Spinner')).toBeInTheDocument();
   });
 
   it('renders children when user is connected', () => {
