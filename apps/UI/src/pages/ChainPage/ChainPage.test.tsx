@@ -94,7 +94,7 @@ describe('ChainPage', () => {
     );
 
     const chainHeading = screen.getByRole('heading', {
-      level: 2,
+      level: 1,
       name: /Chain:\s*Ethereum/i,
     });
 
