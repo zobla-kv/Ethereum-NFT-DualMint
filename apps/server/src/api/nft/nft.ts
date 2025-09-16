@@ -24,23 +24,23 @@ const limiter = rateLimit({
 });
 
 // prettier-ignore
-NFTRouter.post('/', validator('[/nft][POST]', prompt), limiter, async (req: Request, res: Response, next: NextFunction) => {
+NFTRouter.post('/metadata', validator('[/v1/nfts/metadata][POST]', prompt), limiter, async (req: Request, res: Response, next: NextFunction) => {
     try {
       const nftDraft = await generateNFTDraft(req.body.prompt);
       res.status(200).json(nftDraft);
     } catch (err: unknown) {
-      next(new ApiError(`[nft][POST]: ${err}`, { status: 500, message: 'Something went wrong. Please try again' }));
+      next(new ApiError(`[/v1/nfts/metadata][POST]: ${err}`, { status: 500, message: 'Something went wrong. Please try again' }));
     }
   }
 );
 
 // prettier-ignore
-NFTRouter.post('/pinata', validator('[/nft/pinata][POST]', nftDraft), limiter, async (req: Request, res: Response, next: NextFunction) => {
+NFTRouter.post('/image', validator('[/v1/nfts/image][POST]', nftDraft), limiter, async (req: Request, res: Response, next: NextFunction) => {
   try {
       const metadataUri = await uploadNFT(req.body.nftDraft);
       res.status(200).json(metadataUri);
     } catch (err: unknown) {
-      next(new ApiError(`[/nft/pinata][POST]: ${err}`, { status: 500, message: 'Something went wrong. Please try again' }));
+      next(new ApiError(`[/v1/nfts/image][POST]: ${err}`, { status: 500, message: 'Something went wrong. Please try again' }));
     }
 })
 

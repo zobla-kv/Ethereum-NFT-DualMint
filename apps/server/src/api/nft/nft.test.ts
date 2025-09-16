@@ -11,17 +11,19 @@ jest.mock('express-rate-limit', () => {
 
 const app = express();
 app.use(express.json());
-app.use('/api/nft', NFTRouter);
+app.use('/api/v1/nfts', NFTRouter);
 app.use(errorHandler);
 
 jest.mock('../../services/ai/ai', () => ({
   generateNFTDraft: jest.fn(),
 }));
 
-describe('API /nft', () => {
-  describe('POST /', () => {
+describe('API /v1/nfts', () => {
+  describe('POST /metadata', () => {
     it('should use validatePrompt middleware and return 400 for invalid prompt', async () => {
-      const res = await request(app).post('/api/nft').send({ prompt: '!!!' });
+      const res = await request(app)
+        .post('/api/v1/nfts/metadata')
+        .send({ prompt: '!!!' });
       expect(res.statusCode).toBe(400);
       expect(res.body.message).toContain('Invalid request body');
     });
@@ -29,7 +31,7 @@ describe('API /nft', () => {
     it('should return 500 if generateNFTDraft throws an error', async () => {
       (generateNFTDraft as jest.Mock).mockRejectedValueOnce(new Error('fail'));
       const res = await request(app)
-        .post('/api/nft')
+        .post('/api/v1/nfts/metadata')
         .send({ prompt: 'ValidPrompt' });
 
       expect(res.statusCode).toBe(500);
@@ -46,7 +48,7 @@ describe('API /nft', () => {
         },
       });
       const res = await request(app)
-        .post('/api/nft')
+        .post('/api/v1/nfts/metadata')
         .send({ prompt: 'ValidPrompt' });
       expect(res.statusCode).toBe(200);
       expect(res.body.metadata).toBeDefined();

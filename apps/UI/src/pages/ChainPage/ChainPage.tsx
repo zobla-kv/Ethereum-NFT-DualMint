@@ -111,7 +111,7 @@ const ChainPage = (): ReactElement => {
       })
     );
 
-    fetch('http://localhost:4600/api/nft', {
+    fetch('http://localhost:4600/api/v1/nfts/metadata', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ prompt }),
@@ -204,7 +204,7 @@ const ChainPage = (): ReactElement => {
 
     const uploadMetadata = async (): Promise<string> => {
       try {
-        const response = await fetch('http://localhost:4600/api/nft/pinata', {
+        const response = await fetch('http://localhost:4600/api/v1/nfts/image', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ nftDraft: nftDraftForm.data.nft }),

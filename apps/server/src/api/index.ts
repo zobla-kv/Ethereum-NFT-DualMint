@@ -3,6 +3,6 @@ import NFTRouter from './nft/nft';
 
 const router = Router();
 
-router.use('/nft', NFTRouter);
+router.use('/v1/nfts', NFTRouter);
 
 export default router;
