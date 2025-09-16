@@ -39,8 +39,7 @@ main {
 }
 
 h1 {
-  font-size: 2rem;
-  margin-bottom: 1rem;
+  @apply mb-4;
 }
 
 h2 {

@@ -281,12 +281,12 @@ const ChainPage = (): ReactElement => {
       <div className="flex flex-col xl:flex-row justify-between items-center xl:items-start">
         <div className="w-full sm:max-w-[400px]">
           <div className="h-[90px] xl:h-[150px] px-4">
-            <h2 className="text-center mt-5">
+            <h1 className="text-xl !mb-2 text-center mt-5">
               Chain:{' '}
               <span className="text-[var(--color-accent)]">
                 {user?.chain?.name}
               </span>
-            </h2>
+            </h1>
             {user?.chain?.testnet ? (
               <p className="text-green-500 text-center text-sm mt-1 mb-5">
                 You are on testnet. Minting is free.

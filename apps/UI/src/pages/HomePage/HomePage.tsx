@@ -35,18 +35,18 @@ const HomePage = (): ReactElement => {
 
   return (
     <MainLayout>
-      <div className="flex flex-col items-center justify-center flex-grow text-center px-6">
+      <div className="flex flex-col items-center text-center pt-5 sm:pt-20">
         <div>
-          <h1 className="text-4xl mb-4 mt-10">
+          <h1 className="text-3xl sm:text-4xl">
             Mint Your <span className="text-[var(--color-primary)]">NFT</span>{' '}
             with <span className="text-[var(--color-primary)]">AI</span>
           </h1>
-          <p className="max-w-xl mb-12 text-[var(--color-text-accent)]">
+          <p className="max-w-lg mb-12 text-[var(--color-text-accent)] text-sm sm:text-base">
             Choose your blockchain network and start minting unique NFTs.
           </p>
         </div>
 
-        <div className="flex gap-20 mt-5">
+        <div className="flex flex-col sm:flex-row gap-10 sm:gap-20 mt-5">
           {chains.map((chain) => (
             <button
               key={chain.id}

@@ -10,7 +10,7 @@ const Header: FC = () => {
   return (
     <header className="py-8 px-6 xl:px-12 flex gap-5">
       <span
-        className="text-3xl sm:text-3xl text-[var(--color-primary)] font-bold cursor-pointer"
+        className="text-3xl text-[var(--color-primary)] font-bold cursor-pointer"
         onClick={() => navigate('/')}
       >
         Ethereum NFT DualMint
