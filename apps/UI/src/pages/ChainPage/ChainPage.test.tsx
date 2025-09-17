@@ -151,7 +151,7 @@ describe('ChainPage', () => {
 
     await waitFor(() => {
       expect(mockFetch).toHaveBeenCalledWith(
-        'http://localhost:4600/api/nft',
+        'http://localhost:4600/api/v1/nfts/metadata',
         expect.objectContaining({
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -237,7 +237,7 @@ describe('ChainPage', () => {
 
     await waitFor(() => {
       expect(mockFetch).toHaveBeenCalledWith(
-        'http://localhost:4600/api/nft/pinata',
+        'http://localhost:4600/api/v1/nfts/image',
         expect.objectContaining({
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
