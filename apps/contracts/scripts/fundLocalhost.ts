@@ -5,7 +5,7 @@ import { privateKeyToAccount } from 'viem/accounts';
 import { localhost } from 'viem/chains';
 
 const funder = privateKeyToAccount(
-  process.env.LOCAL_PRIVATE_KEY as `0x${string}`
+  process.env.LOCALHOST_DEPLOYER_PRIVATE_KEY as `0x${string}`
 );
 
 const recipient = '0x4eE078C15c7926C174e32346f4210c9764eF7Cc6';

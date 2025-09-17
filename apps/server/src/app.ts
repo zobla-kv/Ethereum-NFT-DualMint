@@ -1,8 +1,13 @@
+import path from 'path';
 import http from 'http';
 import express from 'express';
+import dotenv from 'dotenv';
+
+dotenv.config({
+  path: path.resolve(__dirname, `env/.${process.env.ENV}.env`),
+});
 
 const app = express();
-const SERVER_PORT = 4600;
 
 // endpoints
 import apiRouter from './api/index';
@@ -18,6 +23,6 @@ app.use('/api', cors, express.json(), apiRouter);
 app.use(errorHandler);
 
 // http server
-http.createServer(app).listen(SERVER_PORT, () => {
-  console.log(`server started on port ${SERVER_PORT}`);
+http.createServer(app).listen(process.env.PORT, () => {
+  console.log(`server started on port ${process.env.PORT}`);
 });
