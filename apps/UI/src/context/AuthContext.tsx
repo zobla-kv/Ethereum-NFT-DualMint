@@ -15,6 +15,7 @@ import {
 
 import type { User } from '../interface/User';
 
+import Spinner from '../components/ui/Spinner/Spinner';
 import toast from 'react-hot-toast';
 
 interface AuthContextType {
@@ -36,6 +37,14 @@ export const AuthProvider = ({ children }: PropsWithChildren): ReactElement => {
       ...account,
       balance,
     };
+  }
+
+  if (user?.status === 'reconnecting' || user?.status === 'connecting') {
+    return (
+      <div className="fixed flex items-center justify-center min-h-screen w-full">
+        <Spinner size={100} />
+      </div>
+    );
   }
 
   return (
