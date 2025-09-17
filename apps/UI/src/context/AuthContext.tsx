@@ -1,21 +1,33 @@
-import type { PropsWithChildren, ReactElement } from 'react';
-import { createContext, useContext } from 'react';
+import {
+  createContext,
+  useContext,
+  type PropsWithChildren,
+  type ReactElement,
+} from 'react';
 
-import { useAccount, useBalance, useConnect, useDisconnect } from 'wagmi';
+import {
+  useAccount,
+  useBalance,
+  useConnect,
+  useDisconnect,
+  type Connector,
+} from 'wagmi';
 
 import type { User } from '../interface/User';
 
+import toast from 'react-hot-toast';
+
 interface AuthContextType {
   user: User | null;
-  connect: () => void;
+  connectors: readonly Connector[];
+  connect: (connector: Connector) => void;
   disconnect: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: PropsWithChildren): ReactElement => {
-  const account = useAccount();
-  const { balance, connect, disconnect } = useWallet();
+  const { account, balance, connectors, connect, disconnect } = useWallet();
 
   let user: User | null = null;
 
@@ -27,12 +39,14 @@ export const AuthProvider = ({ children }: PropsWithChildren): ReactElement => {
   }
 
   return (
-    <AuthContext value={{ user, connect, disconnect }}>{children}</AuthContext>
+    <AuthContext value={{ user, connectors, connect, disconnect }}>
+      {children}
+    </AuthContext>
   );
 };
 
 /* eslint-disable react-refresh/only-export-components */
-// TODO: remove the rule
+// TODO: remove eslint rule
 export const useAuth = () => {
   const context = useContext(AuthContext);
 
@@ -44,22 +58,36 @@ export const useAuth = () => {
 };
 
 const useWallet = () => {
+  const account = useAccount();
   const { connect, connectors } = useConnect();
   const { disconnect } = useDisconnect();
   const { address } = useAccount();
   const { data: balance } = useBalance({ address });
 
-  const MetaMaskConnector = connectors.find(
-    (connector) => connector.name === 'MetaMask'
-  );
+  const handleConnect = (connector: Connector) => {
+    const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
+    if (isMobile && !window.ethereum) {
+      toast(
+        'Please open this site in the MetaMask Mobile browser to connect. Other browsers are not supported.'
+      );
+      return;
+    }
 
-  if (!MetaMaskConnector) {
-    throw new Error('MetaMask connector not found');
-  }
+    connect(
+      { connector },
+      {
+        onSuccess: () => toast.success('Wallet connected.'),
+        onError: () =>
+          toast.error('Error connecting wallet. Please try again.'),
+      }
+    );
+  };
 
   return {
+    account,
     balance,
-    connect: () => connect({ connector: MetaMaskConnector }),
-    disconnect: () => disconnect(),
+    connectors,
+    connect: handleConnect,
+    disconnect,
   };
 };

@@ -2,8 +2,10 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
 import Header from './Header';
 
+const mockConnectors = [{ name: 'MetaMask' }];
 const mockConnect = vi.fn();
 const mockDisconnect = vi.fn();
+
 let mockUserStatus = 'disconnected';
 
 vi.mock('../../context/AuthContext', () => ({
@@ -13,6 +15,7 @@ vi.mock('../../context/AuthContext', () => ({
       balance: { value: '10 ETH' },
       status: mockUserStatus,
     },
+    connectors: mockConnectors,
     connect: mockConnect,
     disconnect: mockDisconnect,
   }),
@@ -57,14 +60,6 @@ describe('Header', () => {
     render(<Header />);
     fireEvent.click(screen.getByRole('button', { name: /Logout/i }));
     expect(mockDisconnect).toHaveBeenCalledTimes(1);
-  });
-
-  it('navigates home when title is clicked', () => {
-    render(<Header />);
-    fireEvent.click(
-      screen.getByText(/Ethereum NFT DualMint/i, { selector: 'span' })
-    );
-    expect(mockNavigate).toHaveBeenCalledWith('/');
   });
 
   it('navigates home when Switch Chain is clicked', () => {

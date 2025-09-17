@@ -4,22 +4,27 @@ import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const Header: FC = () => {
-  const { user, connect, disconnect } = useAuth();
+  const { user, connectors, connect, disconnect } = useAuth();
   const navigate = useNavigate();
 
   return (
     <header className="py-8 px-6 xl:px-12 flex gap-5">
-      <span
-        className="text-3xl text-[var(--color-primary)] font-bold cursor-pointer"
-        onClick={() => navigate('/')}
-      >
+      <span className="text-3xl text-[var(--color-primary)] font-bold cursor-default">
         Ethereum NFT DualMint
       </span>
       <div className="flex flex-col sm:flex-row gap-4">
         {!user?.status || user.status !== 'connected' ? (
-          <button onClick={connect} className="btn-primary">
-            Metamask
-          </button>
+          <>
+            {connectors.map((c) => (
+              <button
+                key={c.uid}
+                onClick={() => connect(c)}
+                className="btn-primary whitespace-nowrap"
+              >
+                {c.name}
+              </button>
+            ))}
+          </>
         ) : (
           <>
             <button
