@@ -58,7 +58,7 @@ describe('AuthContext', () => {
 
     mockConnect.mockImplementation(
       (
-        args: { connector: Connector },
+        _: { connector: Connector },
         options?: { onSuccess?: () => void; onError?: () => void }
       ) => {
         options?.onSuccess?.();

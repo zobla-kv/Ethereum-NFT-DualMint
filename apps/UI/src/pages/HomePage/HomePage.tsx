@@ -28,7 +28,7 @@ const HomePage = (): ReactElement => {
       .then((chain) => {
         navigate(`/chain/${chain.name}`);
       })
-      .catch((err) => {
+      .catch(() => {
         toast.error('error connecting to: ' + chain.name);
       });
   };

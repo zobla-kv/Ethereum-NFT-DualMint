@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, type Mock, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router';
 import { useParams } from 'react-router-dom';
 import ChainPage from './ChainPage';
@@ -57,7 +57,7 @@ describe('ChainPage', () => {
 
     vi.stubEnv('VITE_API_URL', 'http://test.com');
 
-    (useAuth as vi.Mock).mockReturnValue({
+    (useAuth as Mock).mockReturnValue({
       user: {
         address: '0x123',
         chain: { name: 'Ethereum' },
@@ -65,17 +65,17 @@ describe('ChainPage', () => {
       },
     });
 
-    (useParams as vi.Mock).mockReturnValue({ chainName: 'Ethereum' });
+    (useParams as Mock).mockReturnValue({ chainName: 'Ethereum' });
 
     global.fetch = mockFetch;
-    (useWriteContract as vi.Mock).mockReturnValue({
+    (useWriteContract as Mock).mockReturnValue({
       writeContractAsync: mockWriteContractAsync,
     });
-    (waitForTransactionReceipt as vi.Mock) = mockWaitForTx;
+    (waitForTransactionReceipt as Mock) = mockWaitForTx;
   });
 
   it('redirects to user chain page if chainName is missing', () => {
-    (useParams as vi.Mock).mockReturnValue({ chainName: '' });
+    (useParams as Mock).mockReturnValue({ chainName: '' });
 
     render(
       <MemoryRouter>

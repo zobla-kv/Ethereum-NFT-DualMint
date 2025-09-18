@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, type Mock, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router';
 import HomePage from './HomePage';
 import { useAuth } from '../../context/AuthContext';
@@ -36,7 +36,7 @@ vi.mock('../../layout/MainLayout', () => ({
 describe('HomePage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (useAuth as vi.Mock).mockReturnValue({
+    (useAuth as Mock).mockReturnValue({
       user: { status: 'connected', chainId: 1 },
     });
   });
@@ -54,7 +54,7 @@ describe('HomePage', () => {
   });
 
   it("show error toast with 'You must connect a wallet first.' if user is not connected to Metamask", () => {
-    (useAuth as vi.Mock).mockReturnValue({
+    (useAuth as Mock).mockReturnValue({
       user: { status: 'disconnected' },
     });
 

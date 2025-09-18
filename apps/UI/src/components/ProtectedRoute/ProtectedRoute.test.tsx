@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { vi } from 'vitest';
+import { vi, type Mock } from 'vitest';
 import ProtectedRoute from './ProtectedRoute';
 import { useAuth } from '../../context/AuthContext';
 
@@ -17,7 +17,7 @@ describe('ProtectedRoute', () => {
   });
 
   it('redirects to / when user is null', () => {
-    (useAuth as vi.Mock).mockReturnValue({ user: null });
+    (useAuth as Mock).mockReturnValue({ user: null });
     render(
       <ProtectedRoute>
         <div>Child</div>
@@ -27,7 +27,7 @@ describe('ProtectedRoute', () => {
   });
 
   it('redirects to / when user is disconnected', () => {
-    (useAuth as vi.Mock).mockReturnValue({
+    (useAuth as Mock).mockReturnValue({
       user: { status: 'disconnected' },
     });
     render(
@@ -39,7 +39,7 @@ describe('ProtectedRoute', () => {
   });
 
   it('renders children when user is connected', () => {
-    (useAuth as vi.Mock).mockReturnValue({
+    (useAuth as Mock).mockReturnValue({
       user: { status: 'connected' },
     });
     render(

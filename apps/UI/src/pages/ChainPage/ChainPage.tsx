@@ -156,7 +156,7 @@ const ChainPage = (): ReactElement => {
         );
         return nftDraft;
       })
-      .catch((err: unknown) => {
+      .catch(() => {
         setPromptForm((prevForm) =>
           produce(prevForm, (form) => {
             form.error = 'Failed to generate NFT draft. Please try again.';
