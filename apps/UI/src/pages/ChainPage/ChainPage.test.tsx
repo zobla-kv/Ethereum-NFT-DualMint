@@ -55,6 +55,8 @@ describe('ChainPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
+    vi.stubEnv('VITE_API_URL', 'http://test.com');
+
     (useAuth as vi.Mock).mockReturnValue({
       user: {
         address: '0x123',
@@ -151,7 +153,7 @@ describe('ChainPage', () => {
 
     await waitFor(() => {
       expect(mockFetch).toHaveBeenCalledWith(
-        'http://localhost:4600/api/v1/nfts/metadata',
+        'http://test.com/nfts/metadata',
         expect.objectContaining({
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -237,7 +239,7 @@ describe('ChainPage', () => {
 
     await waitFor(() => {
       expect(mockFetch).toHaveBeenCalledWith(
-        'http://localhost:4600/api/v1/nfts/image',
+        'http://test.com/nfts/image',
         expect.objectContaining({
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
