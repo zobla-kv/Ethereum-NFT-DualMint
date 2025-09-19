@@ -364,6 +364,8 @@ const ChainPage = (): ReactElement => {
                     src={nftDraftForm.data.nft.metadata.image}
                     className="border-2 border-[var(--color-accent)] p-2 aspect-square rounded-2xl mb-5"
                     alt={nftDraftForm.data.nft?.metadata.description}
+                    width={300}
+                    height={300}
                   />
                 ) : (
                   <div className="relative border-2 border-[var(--color-accent)] aspect-square rounded-lg mb-5 grid place-items-center animate-pulse">
