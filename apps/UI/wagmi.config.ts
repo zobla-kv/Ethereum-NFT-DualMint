@@ -1,6 +1,6 @@
 import { defineChain } from 'viem';
 import { http, createConfig } from 'wagmi';
-import { sepolia } from 'wagmi/chains';
+import { mainnet, sepolia } from 'wagmi/chains';
 import { metaMask } from 'wagmi/connectors';
 
 const localhost = defineChain({
@@ -13,9 +13,18 @@ const localhost = defineChain({
   },
 });
 
-// TODO: disable localhost in production
+const customMainnet = defineChain({
+  ...mainnet,
+  name: 'Mainnet',
+});
+
+const env = import.meta.env.VITE_ENV;
+
 const config = createConfig({
-  chains: [localhost, sepolia],
+  chains:
+    env === 'production'
+      ? [sepolia, customMainnet]
+      : [localhost, sepolia, customMainnet],
   connectors: [
     metaMask({
       dappMetadata: {
@@ -29,6 +38,7 @@ const config = createConfig({
   transports: {
     [localhost.id]: http(),
     [sepolia.id]: http(),
+    [customMainnet.id]: http(),
   },
 });
 

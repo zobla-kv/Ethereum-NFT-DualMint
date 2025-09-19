@@ -287,13 +287,13 @@ const ChainPage = (): ReactElement => {
                 {user?.chain?.name}
               </span>
             </h1>
-            {user?.chain?.testnet ? (
-              <p className="text-green-500 text-center text-sm mt-1 mb-5">
-                You are on testnet. Minting is free.
-              </p>
-            ) : (
+            {user?.chain?.name === 'Mainnet' ? (
               <p className="text-red-500 text-center text-sm mt-1 mb-5">
                 ⚠️ You are on MAINNET. Minting NFT will have real gas fees.
+              </p>
+            ) : (
+              <p className="text-green-500 text-center text-sm mt-1 mb-5">
+                You are on testnet. Minting is free.
               </p>
             )}
           </div>
