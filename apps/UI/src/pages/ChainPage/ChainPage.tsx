@@ -361,6 +361,7 @@ const ChainPage = (): ReactElement => {
               <div className="w-full max-w-[300px] mx-auto">
                 {nftDraftForm.data.nft?.metadata ? (
                   <img
+                    src={nftDraftForm.data.nft.metadata.image}
                     className="border-2 border-[var(--color-accent)] p-2 aspect-square rounded-2xl mb-5"
                     alt={nftDraftForm.data.nft?.metadata.description}
                   />
