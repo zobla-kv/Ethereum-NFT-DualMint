@@ -10,9 +10,7 @@
   ],
   "scripts": {
     "clean": "rimraf node_modules apps/*/node_modules packages/*/node_modules apps/*/dist packages/*/dist",
-    "test": "npm run test -ws",
-    "dev": "npm run dev -ws",
-    "build": "npm run build -ws",
+    "build": "npm run UI:build && npm run server:build",
     "UI:test": "npm run test --workspace=apps/UI",
     "UI:dev": "npm run dev --workspace=apps/UI",
     "UI:build": "npm run build --workspace=apps/UI",

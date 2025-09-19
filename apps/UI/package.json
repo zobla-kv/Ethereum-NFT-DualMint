@@ -6,7 +6,7 @@
   "scripts": {
     "test": "vitest",
     "dev": "ENV=dev vite",
-    "build": "ENV=prod tsc -b && vite build",
+    "build": "tsc -b && ENV=prod vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
