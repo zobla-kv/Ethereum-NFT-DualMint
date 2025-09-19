@@ -402,6 +402,7 @@ const ChainPage = (): ReactElement => {
                     name="description"
                     value={nftDraftForm.data.nft?.metadata.description || ''}
                     placeholder="Waiting for draft..."
+                    rows={3}
                     readOnly
                     className="resize-none focus:outline-none"
                   />
