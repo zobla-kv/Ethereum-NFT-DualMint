@@ -22,6 +22,12 @@ app.use('/api', cors, express.json(), apiRouter);
 // must be used as a last middleware
 app.use(errorHandler);
 
+// serve frontend app
+app.use(express.static(path.join(__dirname, '..', 'public')));
+app.get('/*splat', (_, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
+});
+
 // http server
 http.createServer(app).listen(process.env.PORT, () => {
   console.log(`server started on port ${process.env.PORT}`);
