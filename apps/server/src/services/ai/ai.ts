@@ -27,7 +27,7 @@ export async function generateNFTDraft(prompt: string): Promise<NFT> {
  */
 export async function generateImage(prompt: string): Promise<string> {
   const response = await openAI.images.generate({
-    model: 'dall-e-3',
+    model: 'dall-e-2',
     prompt,
     n: 1,
     size: '512x512',
