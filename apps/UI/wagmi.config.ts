@@ -28,7 +28,7 @@ const config = createConfig({
   connectors: [
     metaMask({
       dappMetadata: {
-        name: 'Ethereum NFT Dualmint',
+        name: 'Ethereum NFT DualMint',
         url: 'http://localhost:5173',
         iconUrl: 'http://localhost:5173/src/assets/photo_icon.svg',
       },

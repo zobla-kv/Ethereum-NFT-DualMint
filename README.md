@@ -1,4 +1,4 @@
-# Ethereum-NFT-Dualmint
+# Ethereum-NFT-DualMint
 
 Mint image-based NFTs from a prompt using AI. Available on **Ethereum Mainnet** and **Sepolia Testnet**. Ready for **OpenSea** and other NFT marketplaces.
 
@@ -6,14 +6,17 @@ Mint image-based NFTs from a prompt using AI. Available on **Ethereum Mainnet** 
 
 ## Live Preview
 
-<div align="center">
-  <img src="./assets/demo.png" alt="Website Screenshot" style="border: 2px solid blue; border-radius: 8px"/>
-  <br/>
-  <br/>
-  <strong style="font-size: 20px">***Mint NFT***</strong>
-  <br/>
-  <a href="ethereum-nft-mint.com" style="display: block; margin-top: 4px; font-size: 20px;">ethereum-nft-mint.com</a>
-</div>
+<p align="center">
+
+![Website Screenshot](./assets/demo.png)
+
+</p>
+
+<p align="center">
+  <strong>**_Mint NFT_**</strong>  
+  <br>
+  <a href="https://ethereum-nft-mint.com">ethereum-nft-mint.com</a>
+</p>
 
 ---
 
