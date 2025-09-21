@@ -2,7 +2,7 @@
   "name": "ethereum-nft-dualmint",
   "version": "1.0.0",
   "private": true,
-  "description": "",
+  "description": "Mint image-based NFTs using AI",
   "main": "index.js",
   "workspaces": [
     "apps/*",
